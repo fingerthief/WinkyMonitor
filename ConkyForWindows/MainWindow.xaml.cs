@@ -36,8 +36,7 @@ namespace Winky
 
             this.Left = Settings.Default.locationLeft;
             this.Top = Settings.Default.locationTop;
-              
-            
+                         
             cpuUsage.Maximum = 100;
             
             bw.WorkerSupportsCancellation = true;
@@ -56,7 +55,8 @@ namespace Winky
             if (bw.WorkerSupportsCancellation == true)
             {
                 bw.CancelAsync();
-                this.Close();    
+                Environment.Exit(0);
+                //this.Close();    
             }
         }
 
@@ -70,12 +70,11 @@ namespace Winky
         public bool netavailable, netavailable2, test;
 
         public NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
-        public PerformanceCounter cpuCounter = new PerformanceCounter();
+        public PerformanceCounter cpuCounter = new PerformanceCounter();  
          
         //Does all the work on a background thread     
         private void bw_DoWork(object sender, DoWorkEventArgs e)
-        {
-            
+        {        
             BackgroundWorker worker = sender as BackgroundWorker;
             
             cpuCounter = new PerformanceCounter();
@@ -83,81 +82,67 @@ namespace Winky
             cpuCounter.CategoryName = "Processor";
             cpuCounter.CounterName = "% Processor Time";
             cpuCounter.InstanceName = "_Total";
+
             float[] avg = new float[10];
 
             while (true)
-            {
-                if ((worker.CancellationPending == true))
+            {  
+                for (int ii = 0; ii < 9; ii++)
                 {
-                    e.Cancel = true;
-                    break;
-                }
-                else
-                {   
-                    worker.ReportProgress((number++));
-                    for (int ii = 0; ii < 9; ii++)
-                    {
-                        avg[ii] = cpuCounter.NextValue();
-                        asdfa = avg.Average();
-                        string aasdf = asdfa.ToString();
+                    avg[ii] = cpuCounter.NextValue();
+                    asdfa = avg.Average();
+                    string aasdf = asdfa.ToString();
                        
-                            Thread.Sleep(100);  
-                    }
+                    Thread.Sleep(100);  
+                }
                     
-                    //Grabs Needed Info For Disk Space etc...
-                    DriveInfo[] drives
-                        = DriveInfo.GetDrives();
+                //Grabs Needed Info For Disk Space etc...
+                DriveInfo[] drives
+                    = DriveInfo.GetDrives();
 
-                    DriveInfo drive = drives[driveSelection];
-                    driveSpace = drive.AvailableFreeSpace / 1073741824.004733;
+                DriveInfo drive = drives[driveSelection];
+                driveSpace = drive.AvailableFreeSpace / 1073741824.004733;
                  
-                    //Grabs all the needed info for network usage
+                //Grabs all the needed info for network usage
 
-                    netavailable2 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+                netavailable2 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
                  
-                    if (netavailable2 == true)
-                    {
-                        NetworkInterface ni = interfaces[nic];
+                if (netavailable2 == true)
+                {
+                    NetworkInterface ni = interfaces[nic];
 
-                        totalSent = (ni.GetIPv4Statistics().BytesSent / 1048576.0).ToString("f2") + " MB";
-                        totalReceived = (ni.GetIPv4Statistics().BytesReceived / 1048576.0).ToString("f2") + " MB";
-                    }
-                    else if (netavailable2 == false)
-                    {
-                        totalReceived = "Disconnected";
-                        totalSent = "Disconnected";
-                    }
-
-                      if (netavailable2 == true && number <= 1)
-                      {
-
-                          getIP();
-                      }
-
-                    // Calculates RAM free, usage, total, and usage in percent
-                    if (number <= 1)
-                    {
-                        ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
-                    } 
-                    ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
-                    ramUsed = ramTotal - ramFree;
-                    ramPercent =ramUsed  / ramTotal * 100;
-
-                    time = DateTime.Now.ToShortTimeString();
-
-                    weather = new WeatherRSS.Weather();
-                    if ( netavailable2 == true && number == 3)
-                    {
-                        RSS = weather.CurrentConditions();
-                        WeatherImage = new Uri(weather.getImage());
-                    }
-                    else if (netavailable2 == false)
-                    {
-                        updates = "Disconnected";
-                    }
+                    totalSent = (ni.GetIPv4Statistics().BytesSent / 1048576.0).ToString("f2") + " MB";
+                    totalReceived = (ni.GetIPv4Statistics().BytesReceived / 1048576.0).ToString("f2") + " MB";
+                }
+                else if (netavailable2 == false)
+                {
+                    totalReceived = "Disconnected";
+                    totalSent = "Disconnected";
+                    updates = "Disconnected";
                 }
 
-            }
+                //on startup grab the weather Ram Total and IP addresses
+                
+                if (netavailable2 == true && number == 1)
+                {
+                    weather = new WeatherRSS.Weather();
+
+                    getIP();
+
+                    ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
+
+                    RSS = weather.CurrentConditions();
+                    WeatherImage = new Uri(weather.getImage());
+                }
+
+                ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
+                ramUsed = ramTotal - ramFree;
+                ramPercent = ramUsed  / ramTotal * 100;
+
+                time = DateTime.Now.ToShortTimeString();
+
+                worker.ReportProgress((number++));
+                }
         }
 
         private string oldLocation = Settings.Default.textboxLocation, newLocation;
@@ -248,6 +233,7 @@ namespace Winky
         public System.Timers.Timer cTimer = new System.Timers.Timer();
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
+            
 
             if (Settings.Default.textboxLocation == "" || Settings.Default.textboxLocation == "http://weather.yahooapis.com/forecastrss?w=")
             {
@@ -265,22 +251,13 @@ namespace Winky
             
             bw.RunWorkerAsync();
 
-            RSS = "Collecting Candy...";  
+            RSS = "Collecting Candy...";
 
-            // Makes all textboxes readonly
-            txtTotalReceived.IsReadOnly = true;
-            txtTotalSent.IsReadOnly = true;
-            txtNetOut.IsReadOnly = true;
-            txtNetIn.IsReadOnly = true;
-            txtPing.IsReadOnly = true;
-            txtRam.IsReadOnly = true;
-            txtRamPercent.IsReadOnly = true;
-            txtDriveSpace.IsReadOnly = true;
-            txtUpdates.IsReadOnly = true;
-            txtLocal.IsReadOnly = true;
-            txtExternal.IsReadOnly = true;
-            txtWeather.IsReadOnly = true; 
+            setTextReadOnly();
 
+            txtNetIn.Text = "0.00 Kbps";
+            txtNetOut.Text = "0.00 Kbps";
+            
             // Make timer for network usage.
             System.Timers.Timer aTimer = new System.Timers.Timer();
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -340,23 +317,21 @@ namespace Winky
             IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
             ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
             updateCount = uResult.Updates.Count;
-
         }
 
         public void fifteenMinutes(object sender, ElapsedEventArgs e)
         {
             cTimer.Interval = 900000;
-
-            getUpdates();
-            
+   
             if (netavailable == true)
             {
+                getUpdates();
+
                 RSS = weather.CurrentConditions();
                 WeatherImage = new Uri(weather.getImage());
 
                 getIP();
-            }
-            
+            }            
         }
 
         private double upLoadOld = 0.0, upLoadNew = 0.0, upLoadTotal = 0.0, downLoadOld = 0.0,
@@ -371,42 +346,35 @@ namespace Winky
             upLoadNew = (ni.GetIPv4Statistics().BytesSent / 131072.0);
             upLoadTotal = upLoadNew - upLoadOld;
 
+            downLoadNew = (ni.GetIPv4Statistics().BytesReceived / 131072.0);
+            downLoadTotal = downLoadNew - downLoadOld;
+
             //changes text between Mbps and Kbps
             if (netavailable == true)
             {
-                if (upLoadTotal > 1)
+                if (upLoadTotal > 1 && downLoadTotal > 1)
                 {
                     bytesSent = (upLoadTotal).ToString("f2") + " Mbps";
                     upLoadOld = upLoadNew;
-                }
-                else
-                {
-                    bytesSent = (upLoadTotal * 1024).ToString("f2") + " Kbps";
-                    upLoadOld = upLoadNew;
-                }
 
-                downLoadNew = (ni.GetIPv4Statistics().BytesReceived / 131072.0);
-                downLoadTotal = downLoadNew - downLoadOld;
-                if (downLoadTotal > 1)
-                {
                     bytesRecieved = (downLoadTotal).ToString("f2") + " Mbps";
                     downLoadOld = downLoadNew;
                 }
                 else
                 {
+                    bytesSent = (upLoadTotal * 1024).ToString("f2") + " Kbps";
+                    upLoadOld = upLoadNew;
+
                     bytesRecieved = (downLoadTotal * 1024).ToString("f2") + " Kbps";
                     downLoadOld = downLoadNew;
                 }
             }
-            
-
         }
         // On double click resize the window. This keeps the content from shifting around.
         private void locationWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (locationWindow.WindowStyle == System.Windows.WindowStyle.None)
             {
-
                 locationWindow.WindowStyle = System.Windows.WindowStyle.SingleBorderWindow;
                 cancel.Opacity = 0;
                 this.Left -= 3;
@@ -438,10 +406,26 @@ namespace Winky
             newWindow.ShowDialog ( );        
         }
 
+        public void setTextReadOnly()
+        {        
+            txtTotalReceived.IsReadOnly = true;
+            txtTotalSent.IsReadOnly = true;
+            txtNetOut.IsReadOnly = true;
+            txtNetIn.IsReadOnly = true;
+            txtPing.IsReadOnly = true;
+            txtRam.IsReadOnly = true;
+            txtRamPercent.IsReadOnly = true;
+            txtDriveSpace.IsReadOnly = true;
+            txtUpdates.IsReadOnly = true;
+            txtLocal.IsReadOnly = true;
+            txtExternal.IsReadOnly = true;
+            txtWeather.IsReadOnly = true; 
+        }
+
         private void locationWindow_Closing(object sender, CancelEventArgs e)
-        {  
-            Environment.Exit(0);
-        }        
+        {
+            cancel_Click(null, null);
+        }
     }
  }
 

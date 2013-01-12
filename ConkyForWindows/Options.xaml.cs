@@ -82,8 +82,7 @@ namespace Winky
         }
 
         private void settingsSave()
-        {
-            
+        {       
             if (txtWeatherLocation.Text != "")
             {
                 Settings.Default.textboxLocation = "http://weather.yahooapis.com/forecastrss?z=" + txtWeatherLocation.Text;

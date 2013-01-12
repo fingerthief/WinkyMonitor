@@ -1,7 +1,7 @@
 ﻿<Window x:Name="locationWindow" x:Class="Winky.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="WinkyMonitor" Height="571.334" Width="277.0" Loaded="Window_Loaded_1" ResizeMode="NoResize" MouseDoubleClick="locationWindow_MouseDoubleClick" ShowInTaskbar="False" BorderBrush="Red" Closing="locationWindow_Closing"  Background="#FF514D4D"  >
+        Title="WinkyMonitor" Height="571.334" Width="277.0" Loaded="Window_Loaded_1" ResizeMode="NoResize" MouseDoubleClick="locationWindow_MouseDoubleClick" ShowInTaskbar="False" BorderBrush="Red" Background="#FF514D4D" Closing="locationWindow_Closing"  >
 
     <Grid x:Name="grid" Margin="0,0,0,-3" Background="White" OpacityMask="Black">
 
