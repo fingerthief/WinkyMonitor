@@ -47,8 +47,7 @@ namespace Winky
     {
 
         public MainWindow()
-        {
-             
+        {       
             InitializeComponent();
 
             this.Left = Settings.Default.locationLeft;
@@ -111,8 +110,6 @@ namespace Winky
 
             while (true)
             {
-
-
                 //Grabs Needed Info For Disk Space etc...
                 DriveInfo[] drives
                     = DriveInfo.GetDrives();
@@ -238,6 +235,7 @@ namespace Winky
             worker2.ReportProgress((number2++));
             bw2.CancelAsync();
             bw2.Dispose();
+            
         }
 
         private void bw2_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -256,15 +254,15 @@ namespace Winky
         {
             netavailable = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
             
-                if (netavailable == false)
-                {
-                    pingtime = "Disconnected";
-                }
-                else if (netavailable == true)
-                {
-                    //tests ping time
-                    pingtime = Convert.ToString(GetPingMS("www.easytel.com"))+ " ms";
-                }
+            if (netavailable == false)
+            {
+                pingtime = "Disconnected";
+            }
+            else if (netavailable == true)
+            {
+                //tests ping time
+                pingtime = Convert.ToString(GetPingMS("www.easytel.com"))+ " ms";
+            }
         }
 
         int GetPingMS(string hostNameOrAddress)

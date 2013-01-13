@@ -62,31 +62,13 @@ namespace Winky
             {
                 winkyGrid.Background = new SolidColorBrush(Color.FromRgb(130, 130, 130));
             }
-            else if (lightButton.IsChecked == true)
+            else
             {
                 winkyGrid.Background = Brushes.White;
-            }
-            else if (lightButton.IsChecked == false && darkButton.IsChecked == false)
-            {
                 lightButton.IsChecked = true;
             }
 
-            //Scans for all NIC'sand adds them to the ComboBox
-            NetworkInterface[] interfaces
-               = NetworkInterface.GetAllNetworkInterfaces();
-
-            foreach (NetworkInterface ni in interfaces)
-            {
-                comboNic.Items.Add(ni.Name);
-            }
-
-            //Scans for all Drives and adds them to the ComboBox
-            DriveInfo[] drives
-                        = DriveInfo.GetDrives();
-            foreach (DriveInfo drive in DriveInfo.GetDrives())
-            {
-                comboDisk.Items.Add(drive.Name);
-            }
+            loadDevices();          
         }
 
         //Saves changes and then close the form
@@ -135,6 +117,26 @@ namespace Winky
             lightButton.IsChecked = Settings.Default.lightCheck;
             
             settingsSave();
+        }
+
+        public void loadDevices()
+        {
+            //Scans for all NIC'sand adds them to the ComboBox
+            NetworkInterface[] interfaces
+               = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (NetworkInterface ni in interfaces)
+            {
+                comboNic.Items.Add(ni.Name);
+            }
+
+            //Scans for all Drives and adds them to the ComboBox
+            DriveInfo[] drives
+                        = DriveInfo.GetDrives();
+            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            {
+                comboDisk.Items.Add(drive.Name);
+            }
         }
     }
 }
