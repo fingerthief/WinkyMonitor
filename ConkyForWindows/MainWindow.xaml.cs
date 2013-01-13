@@ -83,40 +83,7 @@ namespace Winky
                 Environment.Exit(0);   
             }
         }
-        private int number2 = 0;
-        private bool netavailable3;
-
-        private void bw_DoWork2(object sender, DoWorkEventArgs e)
-        {
-            BackgroundWorker worker2 = sender as BackgroundWorker;
-
-            while (true)
-            {       
-                netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();       
-                
-                if (netavailable3 == true && number2 == 1)
-                {
-                    weather = new WeatherRSS.Weather();
-                    //fifteenMinutes(null, null);
-                    RSS = weather.CurrentConditions();
-                    WeatherImage = new Uri(weather.getImage());
-                    getUpdates();
-
-                }
-                for (int ii = 0; ii < 9; ii++)
-                {
-                    Thread.Sleep(100);
-                }
-
-                worker2.ReportProgress((number2++));            
-            }
-        }
-
-        private void bw2_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            //txtUpdates.Text = Convert.ToString(updateCount);
-        }
-
+        
         //Declare all variables
         public double ramTotal, ramUsed, ramFree, ramPercent,
             driveSpace;
@@ -181,10 +148,10 @@ namespace Winky
                 //on startup grab the weather Ram Total and IP addresses
                 
                 if (netavailable2 == true && number == 1)
-                {                  
+                {
+                    OnTimedEvent(null, null);
                     ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
                     getIP();
-
                     pingEvent(null, null);            
                 }
 
@@ -252,6 +219,40 @@ namespace Winky
             //prints the weather conditions and weather icon 
             txtWeather.Text = RSS;
             imgCloudy.Source = new BitmapImage(WeatherImage);
+
+        }
+
+        private int number2 = 0;
+        private bool netavailable3;
+
+        private void bw_DoWork2(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker2 = sender as BackgroundWorker;
+
+            while (true)
+            {
+                netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+
+                if (netavailable3 == true && number2 == 1)
+                {
+
+                    weather = new WeatherRSS.Weather();
+                    RSS = weather.CurrentConditions();
+                    WeatherImage = new Uri(weather.getImage());
+                    getUpdates();
+
+                }
+                for (int ii = 0; ii < 9; ii++)
+                {
+                    Thread.Sleep(150);
+                }
+
+                worker2.ReportProgress((number2++));
+            }
+        }
+
+        private void bw2_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
 
         }
 
@@ -374,7 +375,9 @@ namespace Winky
         }
         
         public void fifteenMinutes(object sender, ElapsedEventArgs e)
-        {   
+        {
+            cTimer.Interval = 90000;
+
             if (netavailable2 == true)
             {        
 
