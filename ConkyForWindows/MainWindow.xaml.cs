@@ -96,7 +96,7 @@ namespace Winky
         public NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
         public PerformanceCounter cpuCounter = new PerformanceCounter();  
          
-        //Does all the work on a background thread     
+        //This thread contains all the code that needs to be running constantly 
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {        
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -110,27 +110,20 @@ namespace Winky
             float[] avg = new float[10];
 
             while (true)
-            {  
-                for (int ii = 0; ii < 9; ii++)
-                {
-                    avg[ii] = cpuCounter.NextValue();
-                    asdfa = avg.Average();
-                    string aasdf = asdfa.ToString();
-                       
-                    Thread.Sleep(100);  
-                }
-                    
+            {
+
+
                 //Grabs Needed Info For Disk Space etc...
                 DriveInfo[] drives
                     = DriveInfo.GetDrives();
 
                 DriveInfo drive = drives[driveSelection];
                 driveSpace = drive.AvailableFreeSpace / 1073741824.004733;
-                 
+
                 //Grabs all the needed info for network usage
 
                 netavailable2 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
-                 
+
                 if (netavailable2 == true)
                 {
                     NetworkInterface ni = interfaces[nic];
@@ -145,24 +138,22 @@ namespace Winky
                     updates = "Disconnected";
                 }
 
-                //on startup grab the weather Ram Total and IP addresses
-                
-                if (netavailable2 == true && number == 1)
-                {
-                    OnTimedEvent(null, null);
-                    ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
-                    getIP();
-                    pingEvent(null, null);            
-                }
-
                 ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
                 ramUsed = ramTotal - ramFree;
-                ramPercent = ramUsed  / ramTotal * 100;
+                ramPercent = ramUsed / ramTotal * 100;
 
                 time = DateTime.Now.ToShortTimeString();
 
-                worker.ReportProgress((number++));
+                for (int ii = 0; ii < 9; ii++)
+                {
+                    avg[ii] = cpuCounter.NextValue();
+                    asdfa = avg.Average();
+                    string aasdf = asdfa.ToString();
+
+                    Thread.Sleep(100);
                 }
+                worker.ReportProgress((number++));
+            }
         }
 
         private string oldLocation = Settings.Default.textboxLocation, newLocation;
@@ -225,30 +216,28 @@ namespace Winky
         private int number2 = 0;
         private bool netavailable3;
 
+        //This thread is for code that needs to be ran just at startup
         private void bw_DoWork2(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker2 = sender as BackgroundWorker;
 
-            while (true)
+            netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+
+            if (netavailable3 == true && number2 < 1)
             {
-                netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
-
-                if (netavailable3 == true && number2 == 1)
-                {
-
-                    weather = new WeatherRSS.Weather();
-                    RSS = weather.CurrentConditions();
-                    WeatherImage = new Uri(weather.getImage());
-                    getUpdates();
-
-                }
-                for (int ii = 0; ii < 9; ii++)
-                {
-                    Thread.Sleep(150);
-                }
-
-                worker2.ReportProgress((number2++));
+                getIP();
+                pingEvent(null, null);
+                OnTimedEvent(null, null);
+                ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
+                weather = new WeatherRSS.Weather();
+                RSS = weather.CurrentConditions();
+                WeatherImage = new Uri(weather.getImage());
+                getUpdates();
             }
+
+            worker2.ReportProgress((number2++));
+            bw2.CancelAsync();
+            bw2.Dispose();
         }
 
         private void bw2_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -309,9 +298,6 @@ namespace Winky
             RSS = "Collecting Candy...";     
 
             setTextReadOnly();
-
-            //txtNetIn.Text = "0.00 Kbps";
-            //txtNetOut.Text = "0.00 Kbps";
             
             // Make timer for network usage.
             System.Timers.Timer aTimer = new System.Timers.Timer();
