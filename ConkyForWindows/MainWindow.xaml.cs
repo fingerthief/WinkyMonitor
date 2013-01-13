@@ -62,19 +62,59 @@ namespace Winky
                 new DoWorkEventHandler(bw_DoWork);
             bw.ProgressChanged +=
                 new ProgressChangedEventHandler(bw_ProgressChanged);
-            
+
+            bw2.WorkerSupportsCancellation = true;
+            bw2.WorkerReportsProgress = true;
+            bw2.DoWork +=
+                new DoWorkEventHandler(bw_DoWork2);
+            bw2.ProgressChanged +=
+                new ProgressChangedEventHandler(bw2_ProgressChanged);      
         }
 
         BackgroundWorker bw = new BackgroundWorker();
+        BackgroundWorker bw2 = new BackgroundWorker();
 
         private void cancel_Click(object sender, RoutedEventArgs e)
         {
             if (bw.WorkerSupportsCancellation == true)
             {
                 bw.CancelAsync();
-                Environment.Exit(0);
-                //this.Close();    
+                bw2.CancelAsync();
+                Environment.Exit(0);   
             }
+        }
+        private int number2 = 0;
+        private bool netavailable3;
+
+        private void bw_DoWork2(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker2 = sender as BackgroundWorker;
+
+            while (true)
+            {       
+                netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();       
+                
+                if (netavailable3 == true && number2 == 1)
+                {
+                    weather = new WeatherRSS.Weather();
+                    //fifteenMinutes(null, null);
+                    RSS = weather.CurrentConditions();
+                    WeatherImage = new Uri(weather.getImage());
+                    getUpdates();
+
+                }
+                for (int ii = 0; ii < 9; ii++)
+                {
+                    Thread.Sleep(100);
+                }
+
+                worker2.ReportProgress((number2++));            
+            }
+        }
+
+        private void bw2_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            //txtUpdates.Text = Convert.ToString(updateCount);
         }
 
         //Declare all variables
@@ -141,15 +181,11 @@ namespace Winky
                 //on startup grab the weather Ram Total and IP addresses
                 
                 if (netavailable2 == true && number == 1)
-                {
-                    weather = new WeatherRSS.Weather();
-
+                {                  
+                    ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
                     getIP();
 
-                    ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
-
-                    RSS = weather.CurrentConditions();
-                    WeatherImage = new Uri(weather.getImage());
+                    pingEvent(null, null);            
                 }
 
                 ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
@@ -221,7 +257,7 @@ namespace Winky
 
         public int updateCount = 0;
         public string external;
-        private string RSS;
+        public string RSS;
         private WeatherRSS.Weather weather;
 
         Uri WeatherImage = new Uri("http://nothing.com");
@@ -262,18 +298,19 @@ namespace Winky
 
             newWindow = new Winky.Window1(this);
 
-            newWindow.btnSave_Click();
+            newWindow.setTheme();
 
             cancel.Opacity = 0;
             
             bw.RunWorkerAsync();
+            bw2.RunWorkerAsync();
 
-            RSS = "Collecting Candy...";
+            RSS = "Collecting Candy...";     
 
             setTextReadOnly();
 
-            txtNetIn.Text = "0.00 Kbps";
-            txtNetOut.Text = "0.00 Kbps";
+            //txtNetIn.Text = "0.00 Kbps";
+            //txtNetOut.Text = "0.00 Kbps";
             
             // Make timer for network usage.
             System.Timers.Timer aTimer = new System.Timers.Timer();
@@ -296,7 +333,7 @@ namespace Winky
             cTimer.Elapsed += new ElapsedEventHandler(fifteenMinutes);
 
             // Set the Interval to 15 minutes.
-            cTimer.Interval = 1000;//900000;
+            cTimer.Interval = 900000;//900000;
             cTimer.Enabled = true;
         }
 
@@ -335,19 +372,20 @@ namespace Winky
             ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
             updateCount = uResult.Updates.Count;
         }
-
+        
         public void fifteenMinutes(object sender, ElapsedEventArgs e)
-        {
-            cTimer.Interval = 900000;
-   
-            if (netavailable == true)
-            {
-                getUpdates();
+        {   
+            if (netavailable2 == true)
+            {        
+
+                weather = new WeatherRSS.Weather();
+
+                getIP();
 
                 RSS = weather.CurrentConditions();
                 WeatherImage = new Uri(weather.getImage());
 
-                getIP();
+                getUpdates();
             }            
         }
 

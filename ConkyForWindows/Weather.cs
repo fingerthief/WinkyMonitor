@@ -60,7 +60,7 @@ namespace WeatherRSS
             return weather;
         }
 
-        private string forcastTemps()
+        public string forcastTemps()
         {
             string weather = "";
 

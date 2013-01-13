@@ -66,6 +66,10 @@ namespace Winky
             {
                 winkyGrid.Background = Brushes.White;
             }
+            else if (lightButton.IsChecked == false && darkButton.IsChecked == false)
+            {
+                lightButton.IsChecked = true;
+            }
 
             //Scans for all NIC'sand adds them to the ComboBox
             NetworkInterface[] interfaces
@@ -83,7 +87,6 @@ namespace Winky
             {
                 comboDisk.Items.Add(drive.Name);
             }
-
         }
 
         //Saves changes and then close the form
@@ -125,7 +128,8 @@ namespace Winky
             }
         }
 
-        internal void btnSave_Click()
+        //a method that is called from the main class to set theme on startup
+        internal void setTheme()
         {
             darkButton.IsChecked = Settings.Default.darkCheck;
             lightButton.IsChecked = Settings.Default.lightCheck;
