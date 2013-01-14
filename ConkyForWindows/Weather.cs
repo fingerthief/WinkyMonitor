@@ -9,7 +9,7 @@ namespace WeatherRSS
     {
 
         private string location = Settings.Default.textboxLocation;
-        
+        public string current;
         public string CurrentConditions()
         {
             string city = "";
@@ -27,18 +27,24 @@ namespace WeatherRSS
             // Set up namespace manager for XPath  
             XmlNamespaceManager NameSpaceMgrCondition = new XmlNamespaceManager(condition.NameTable);
             XmlNamespaceManager NameSpaceMgrCity = new XmlNamespaceManager(condition.NameTable);
+           
+
             NameSpaceMgrCondition.AddNamespace("yweather", "http://xml.weather.yahoo.com/ns/rss/1.0");
             NameSpaceMgrCity.AddNamespace("yweather", "http://xml.weather.yahoo.com/ns/rss/1.0");
+            
 
             // Get forecast with XPath   
             XmlNodeList nodes = condition.SelectNodes("/rss/channel/item/yweather:condition", NameSpaceMgrCondition);
             XmlNodeList nodess = condition.SelectNodes("/rss/channel/yweather:location", NameSpaceMgrCity);
+            
 
             foreach (XmlNode node in nodess)
             {
                 city =  ("Location: " +
                      node.Attributes["city"].InnerText);
             }
+
+            
            
 
             // To get forcasted high
@@ -46,18 +52,37 @@ namespace WeatherRSS
 
             foreach (XmlNode node in nodes)
             {
-                
-                weather = ( city + "\n" + "Weather: " +
+                current = node.Attributes["text"].InnerText;
+
+                if (Settings.Default.darkCheck == true)
+                {
+                    weather = (city + "\n" + "Now: " +                                  
+                                    node.Attributes["temp"].InnerText + "\n" +
+                                    "High: " +
+                                    temps + "\n" +
+                                    "Last Updated: " +
+                                   node.Attributes["date"].InnerText);
+                }
+                else if (Settings.Default.darkCheck == false)
+                {
+                    weather = (city + "\n" + "Weather: " +
                                     node.Attributes["text"].InnerText + "\n" +
                                     "Now: " +
                                     node.Attributes["temp"].InnerText + "\n" +
                                     "High: " +
                                     temps + "\n" +
-                                    "Last Updated: " +      
-                                   node.Attributes["date"].InnerText);       
+                                    "Last Updated: " +
+                                   node.Attributes["date"].InnerText);
+                }
+
+                
+
+               
+               
             }
       
             return weather;
+            
         }
 
         public string forcastTemps()

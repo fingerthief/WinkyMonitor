@@ -56,11 +56,11 @@ namespace Winky
             comboDisk.SelectedIndex = Settings.Default.driveSelection;
             lightButton.IsChecked = Settings.Default.lightCheck;
             darkButton.IsChecked = Settings.Default.darkCheck;
-
-            //Makes the settings window the same color (slightly lighter for easy reading) as main window
+           // setHeight();
+            
             if (darkButton.IsChecked == true)
             {
-                winkyGrid.Background = new SolidColorBrush(Color.FromRgb(130, 130, 130));
+                winkyGrid.Background = mainWindow.grid.Background;
             }
             else
             {
@@ -70,6 +70,39 @@ namespace Winky
 
             loadDevices();          
         }
+        public double lightHeight;
+        public double darkHeight;
+
+        public void height()
+        {
+            if (mainWindow.locationWindow.WindowStyle == System.Windows.WindowStyle.None)
+            {
+                lightHeight = 520;
+                darkHeight = 505;
+            }
+            else
+            {
+                lightHeight = 545;
+                darkHeight = 527;
+            }
+        }
+
+
+        public void setHeight()
+        {
+            if (Settings.Default.lightCheck == true)
+            {
+                height();
+                mainWindow.Height = lightHeight;
+            }
+            else if (Settings.Default.darkCheck == true)
+            {
+                height();
+                mainWindow.Height = darkHeight;
+            }
+ 
+        }
+    
 
         //Saves changes and then close the form
         public void btnSave_Click(object sender, RoutedEventArgs e)
@@ -85,7 +118,10 @@ namespace Winky
             this.Close();
         }
 
-        private void settingsSave()
+        
+
+
+        public void settingsSave()
         {       
             if (txtWeatherLocation.Text != "")
             {
@@ -94,21 +130,36 @@ namespace Winky
 
             if (Settings.Default.lightCheck == true)
             {
+                setHeight();
+                mainWindow.Height = lightHeight;
                 mainWindow.imgCloudy.Opacity = 100;
                 Settings.Default.lightCheck = true;
                 Settings.Default.circleDark = false;
-                Settings.Default.theme = Convert.ToString(mainWindow.grid.Background = Brushes.White);
+                mainWindow.txtTime.Foreground = new SolidColorBrush(Color.FromRgb(0,0,0));
+                Settings.Default.theme = Convert.ToString(mainWindow.grid.Background = new SolidColorBrush(Color.FromRgb(255, 243, 243)));
                 Settings.Default.darkCheck = false;
+                mainWindow.txtDarkCondition.Opacity = 0;
+                mainWindow.cTimer.Interval = 1;
+                Settings.Default.Save();
             }
             else if (Settings.Default.darkCheck == true)
             {
+                setHeight();
+                mainWindow.Height = darkHeight;
+                mainWindow.txtDarkCondition.Opacity = 100;
+                mainWindow.cTimer.Interval = 1;
                 mainWindow.imgCloudy.Opacity = 0;
                 Settings.Default.darkCheck = true;
                 Settings.Default.circleDark = true;
-                Settings.Default.theme = Convert.ToString(mainWindow.grid.Background = new SolidColorBrush(Color.FromRgb(110, 110, 110)));
+                mainWindow.txtTime.Foreground = new SolidColorBrush(Color.FromRgb(255, 243, 243));
+                Settings.Default.theme = Convert.ToString(mainWindow.grid.Background = mainWindow.Background);
                 Settings.Default.lightCheck = false;
+                Settings.Default.Save();
             }
         }
+
+       
+
 
         //a method that is called from the main class to set theme on startup
         internal void setTheme()

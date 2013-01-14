@@ -142,5 +142,41 @@ namespace Winky.Properties {
                 this["circleDark"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double DarkHeight {
+            get {
+                return ((double)(this["DarkHeight"]));
+            }
+            set {
+                this["DarkHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double lightHeight {
+            get {
+                return ((double)(this["lightHeight"]));
+            }
+            set {
+                this["lightHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int heightNumber {
+            get {
+                return ((int)(this["heightNumber"]));
+            }
+            set {
+                this["heightNumber"] = value;
+            }
+        }
     }
 }

@@ -206,12 +206,14 @@ namespace Winky
 
             //prints the weather conditions and weather icon 
             txtWeather.Text = RSS;
+            txtDarkCondition.Text = weather.current;
             imgCloudy.Source = new BitmapImage(WeatherImage);
 
         }
 
         private int number2 = 0;
         private bool netavailable3;
+        private string condition;
 
         //This thread is for code that needs to be ran just at startup
         private void bw_DoWork2(object sender, DoWorkEventArgs e)
@@ -228,8 +230,9 @@ namespace Winky
                 ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
                 weather = new WeatherRSS.Weather();
                 RSS = weather.CurrentConditions();
+                
                 WeatherImage = new Uri(weather.getImage());
-                getUpdates();
+                getUpdates();   
             }
 
             worker2.ReportProgress((number2++));
@@ -240,7 +243,7 @@ namespace Winky
 
         private void bw2_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-
+           
         }
 
         public int updateCount = 0;
@@ -283,10 +286,12 @@ namespace Winky
                 newWindow.Show();
                 
             }
-
             newWindow = new Winky.Window1(this);
+            newWindow.height();
 
             newWindow.setTheme();
+
+            txtDarkCondition.Text = "";
 
             cancel.Opacity = 0;
             
@@ -372,6 +377,12 @@ namespace Winky
                 RSS = weather.CurrentConditions();
                 WeatherImage = new Uri(weather.getImage());
 
+                if (Settings.Default.darkCheck == true)
+                {
+                    condition = weather.current;
+
+                }  
+
                 getUpdates();
             }            
         }
@@ -421,16 +432,15 @@ namespace Winky
                 cancel.Opacity = 0;
                 this.Left -= 3;
                 this.Top -= 26;
-                this.Height += 20;
+                this.Height += 25;
             }
             else
             {
-                locationWindow.WindowStyle = System.Windows.WindowStyle.None;   
-
+                locationWindow.WindowStyle = System.Windows.WindowStyle.None;
                 cancel.Opacity = 100;
                 this.Left += 3;
                 this.Top += 26;
-                this.Height -= 20;
+                this.Height -= 25;
 
                 Settings.Default.locationLeft = this.Left;
                 Settings.Default.locationTop = this.Top;

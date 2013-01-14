@@ -11,7 +11,7 @@
         <Label x:Name="lblDrives" Content="Please Select your Drive" HorizontalAlignment="Left" Margin="153,54,0,0" VerticalAlignment="Top"/>
         <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="104,173,0,0" Width="75" Height="23" VerticalAlignment="Top" Click="btnSave_Click"/>
         <RadioButton Content="Light" Height="16" HorizontalAlignment="Left" Margin="12,151,0,0" Name="lightButton" VerticalAlignment="Top" Width="56" />
-        <RadioButton Content="Dark" Height="16" HorizontalAlignment="Left" Margin="12,173,0,0" Name="darkButton" VerticalAlignment="Top" Width="71" />
+        <RadioButton Content="Holo" Height="16" HorizontalAlignment="Left" Margin="12,173,0,0" Name="darkButton" VerticalAlignment="Top" Width="71" />
         <Label x:Name="lblTheme" Content="Choose Your Theme" HorizontalAlignment="Left" Margin="10,120,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
