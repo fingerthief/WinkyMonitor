@@ -50,13 +50,13 @@ namespace Winky
 
         private void options_Loaded(object sender, RoutedEventArgs e)
         {
+            
             //Sets the content to last saved entry
             txtWeatherLocation.Text = Settings.Default.txtWOEID;
             comboNic.SelectedIndex = Settings.Default.nic;
             comboDisk.SelectedIndex = Settings.Default.driveSelection;
             lightButton.IsChecked = Settings.Default.lightCheck;
             darkButton.IsChecked = Settings.Default.darkCheck;
-           // setHeight();
             
             if (darkButton.IsChecked == true)
             {
@@ -141,9 +141,7 @@ namespace Winky
                 mainWindow.txtDarkCondition.Opacity = 0;
                 mainWindow.cTimer.Interval = 1;
                 Settings.Default.Save();
-               // mainWindow.fifteenMinutes(null,null);
                 mainWindow.number2 = 0;
-               // mainWindow.bw2.RunWorkerAsync();
             }
             else if (Settings.Default.darkCheck == true)
             {
@@ -159,9 +157,6 @@ namespace Winky
                 Settings.Default.lightCheck = false;
                 Settings.Default.Save();
                 mainWindow.number2 = 0;
-              //  mainWindow.bw2.RunWorkerAsync();
-                
-              //  mainWindow.fifteenMinutes(null, null);
             }
         }
 

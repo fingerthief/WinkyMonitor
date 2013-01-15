@@ -19,7 +19,7 @@
         </Grid.Background>
 
         <TextBox x:Name="txtWeather" HorizontalAlignment="Left" Height="95" Margin="10,418,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="251" Background="{x:Null}" BorderThickness="0" OpacityMask="Black"  Foreground="Black" Focusable="False"/>
-        <ProgressBar Height="21" HorizontalAlignment="Left" Margin="126,74,0,0" x:Name="cpuUsage" VerticalAlignment="Top" Width="120" Foreground="#FF35B5E5" />
+        <ProgressBar Height="21" HorizontalAlignment="Left" Margin="126,74,0,0" x:Name="cpuUsage" VerticalAlignment="Top" Width="120" Foreground="#FF35B5E5" Background="#FFD1D1D1" />
         <Button Content="X" Height="12" HorizontalAlignment="Left" Margin="255,0,0,0" x:Name="cancel" VerticalAlignment="Top" Width="14" Click="cancel_Click" FontSize="6" Background="#FF35B5E5" Cursor="Arrow" ToolTip="Close" />
         <TextBox x:Name="txtNetOut" Height="23" Margin="126,186,0,0" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120" Background="#FFD1D1D1" Focusable="False"/>
         <TextBox x:Name="txtNetIn" HorizontalAlignment="Left" Height="23" Margin="126,158,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Background="#FFD1D1D1" Focusable="False"/>
@@ -70,12 +70,12 @@
         			UriSource="" />
             </Image.Source>
         </Image>
-        <TextBlock x:Name="txtDarkCondition" Margin="135,425,44,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" FontStyle="Italic" FontWeight="Bold" FontSize="20" Foreground="#FF252525">
+        <TextBlock x:Name="txtDarkCondition" Margin="135,421,44,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" FontStyle="Italic" FontWeight="Bold" FontSize="20" Foreground="#FF252525">
             <TextBlock.Effect>
                 <DropShadowEffect RenderingBias="Quality" Color="White"/>
             </TextBlock.Effect>
         </TextBlock>
-        <ProgressBar x:Name="progUpdates" HorizontalAlignment="Left" Height="24" Margin="126,383,0,0" VerticalAlignment="Top" Width="120" Foreground="#FF35B5E5"/>
+        <ProgressBar x:Name="progUpdates" HorizontalAlignment="Left" Height="24" Margin="126,383,0,0" VerticalAlignment="Top" Width="120" Foreground="#FF35B5E5" Background="#FFD1D1D1"/>
         <TextBlock x:Name="txtUpdates" HorizontalAlignment="Left" Margin="128,385,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
     </Grid>
 </Window>

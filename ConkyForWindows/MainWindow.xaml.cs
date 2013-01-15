@@ -83,8 +83,8 @@ namespace Winky
         
 
         BackgroundWorker bw = new BackgroundWorker();
-      public  BackgroundWorker bw2 = new BackgroundWorker();
-      BackgroundWorker bw3 = new BackgroundWorker();
+        public  BackgroundWorker bw2 = new BackgroundWorker();
+        BackgroundWorker bw3 = new BackgroundWorker();
 
         private void cancel_Click(object sender, RoutedEventArgs e)
         {
@@ -375,7 +375,7 @@ namespace Winky
         
         public void fifteenMinutes(object sender, ElapsedEventArgs e)
         {
-            cTimer.Interval = 90000;
+            cTimer.Interval = 900000;
 
             if (netavailable2 == true)
             {        
@@ -463,7 +463,11 @@ namespace Winky
         private void settings_Click(object sender, RoutedEventArgs e)
         {
             newWindow = new Winky.Window1 ( this );
-            newWindow.ShowDialog ( );        
+
+            newWindow.WindowStartupLocation = WindowStartupLocation.Manual;
+            newWindow.Left = this.Left;
+            newWindow.Top = this.Top + 90;
+            newWindow.ShowDialog();        
         }
 
         public void setTextReadOnly()
@@ -490,7 +494,9 @@ namespace Winky
         {
             if (MessageBox.Show("Are You Sure You Want To Install Updates?", "Update Windows", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
+                updateAmount = 0;
                 numberUpdate = 0;
+                noUpdates = 0;
                 lblUpdates.Content = "Installing Updates :";
                 bw3.RunWorkerAsync();
             }
@@ -498,11 +504,11 @@ namespace Winky
             {
 
             }
-
         }
         private int numberUpdate = 0;
         private int noUpdates = 0;
         private double progressIncrement;
+        private int updateAmount = 0;
         private void bw_DoWork3(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker3 = sender as BackgroundWorker;
@@ -515,6 +521,8 @@ namespace Winky
                 IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
                 ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
 
+                updateAmount = uResult.Updates.Count;
+
                 if (uResult.Updates.Count == 0)
                 {
                     MessageBox.Show("No Available Updates.");
@@ -526,8 +534,8 @@ namespace Winky
 
                     UpdateDownloader downloader = uSession.CreateUpdateDownloader();
                     downloader.Updates = uResult.Updates;
-                    progressIncrement = (100 / uResult.Updates.Count) / 5;
-                    
+                    progressIncrement = (100 / uResult.Updates.Count) / 2;
+
                     foreach (IUpdate update in uResult.Updates)
                     {
                         downloader.Download();
@@ -535,7 +543,6 @@ namespace Winky
                         
                     }
                     
-
                     UpdateCollection updatesToInstall = new UpdateCollection();
 
                     foreach (IUpdate update in uResult.Updates)
@@ -552,15 +559,16 @@ namespace Winky
                         worker3.ReportProgress((numberUpdate++));
                     }
                 }
-                
             }
+            noUpdates = 0;
+            noUpdates++;
             bw3.CancelAsync();
             bw3.Dispose();      
         }
 
         private void bw3_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            if (numberUpdate <= 2)
+            if (numberUpdate <= updateAmount * 2)
             {
                 progUpdates.Value += progressIncrement;
             }
@@ -569,10 +577,9 @@ namespace Winky
             if (noUpdates == 1)
             {
                 lblUpdates.Content = "Available Updates :";
+                progUpdates.Value = 0;
             }
-        }
-
-       
+        }    
     }
  }
 
