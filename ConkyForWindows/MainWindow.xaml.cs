@@ -301,6 +301,7 @@ namespace Winky
             newWindow.setTheme();
 
             txtDarkCondition.Text = "";
+            txtUpdates.Text = "";
             txtAvgBox.Text = "Loading....";
             cancel.Opacity = 0;
             
@@ -475,7 +476,6 @@ namespace Winky
             txtRam.IsReadOnly = true;
             txtRamPercent.IsReadOnly = true;
             txtDriveSpace.IsReadOnly = true;
-            txtUpdates.IsReadOnly = true;
             txtLocal.IsReadOnly = true;
             txtExternal.IsReadOnly = true;
             txtWeather.IsReadOnly = true; 
@@ -490,7 +490,7 @@ namespace Winky
         {
             if (MessageBox.Show("Are You Sure You Want To Install Updates?", "Update Windows", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-
+                numberUpdate = 0;
                 lblUpdates.Content = "Installing Updates :";
                 bw3.RunWorkerAsync();
             }
@@ -500,8 +500,9 @@ namespace Winky
             }
 
         }
-
         private int numberUpdate = 0;
+        private int noUpdates = 0;
+        private double progressIncrement;
         private void bw_DoWork3(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker3 = sender as BackgroundWorker;
@@ -510,46 +511,65 @@ namespace Winky
 
             if (netavailable3 == true)
             {
-
                 UpdateSessionClass uSession = new UpdateSessionClass();
                 IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
                 ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
+
                 if (uResult.Updates.Count == 0)
                 {
                     MessageBox.Show("No Available Updates.");
+                    noUpdates++;
+                    worker3.ReportProgress((numberUpdate++));
                 }
                 else if (uResult.Updates.Count != 0)
                 {
+
                     UpdateDownloader downloader = uSession.CreateUpdateDownloader();
                     downloader.Updates = uResult.Updates;
-                    downloader.Download();
+                    progressIncrement = (100 / uResult.Updates.Count) / 5;
+                    
+                    foreach (IUpdate update in uResult.Updates)
+                    {
+                        downloader.Download();
+                        worker3.ReportProgress((numberUpdate++));
+                        
+                    }
+                    
 
                     UpdateCollection updatesToInstall = new UpdateCollection();
 
                     foreach (IUpdate update in uResult.Updates)
                     {
                         if (update.IsDownloaded)
+
                             updatesToInstall.Add(update);
+
+                        IUpdateInstaller installer = uSession.CreateUpdateInstaller();
+                        installer.Updates = updatesToInstall;
+
+                        IInstallationResult installationRes = installer.Install();
+
+                        worker3.ReportProgress((numberUpdate++));
                     }
-
-                    IUpdateInstaller installer = uSession.CreateUpdateInstaller();
-                    installer.Updates = updatesToInstall;
-
-
-                    IInstallationResult installationRes = installer.Install();
                 }
                 
             }
-
-            worker3.ReportProgress((numberUpdate++));
             bw3.CancelAsync();
-            bw3.Dispose();
-           
+            bw3.Dispose();      
         }
 
         private void bw3_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            lblUpdates.Content = "Available Updates :";
+            if (numberUpdate <= 2)
+            {
+                progUpdates.Value += progressIncrement;
+            }
+            
+
+            if (noUpdates == 1)
+            {
+                lblUpdates.Content = "Available Updates :";
+            }
         }
 
        

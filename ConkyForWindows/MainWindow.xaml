@@ -60,7 +60,6 @@
             </TextBlock.RenderTransform>
         </TextBlock>
         <Label x:Name="lblUpdates" Content="Available Updates :" HorizontalAlignment="Left" Margin="10,380,0,0" VerticalAlignment="Top" BorderBrush="Black" Foreground="Black" MouseRightButtonUp="lblUpdates_MouseRightButtonUp"/>
-        <TextBox x:Name="txtUpdates" HorizontalAlignment="Left" Height="24" Margin="126,383,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Background="#FFD1D1D1" Focusable="False"/>
         <TextBlock x:Name="txtTime" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Text="Time" Margin="0,5,0,0"  Foreground="Black"/>
         <Label x:Name="lblSysInfo" Content="WInkyMonitor" Margin="0,21,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Height="30" FontSize="16" FontWeight="Bold" Background="#FF35B5E5"/>
         <Button Content="S" Height="12" HorizontalAlignment="Left" Margin="234,0,0,0" x:Name="btnOptions" VerticalAlignment="Top" Width="14" Click="settings_Click" FontSize="6" Background="#FF35B5E5" ToolTip="Settings" />
@@ -76,5 +75,7 @@
                 <DropShadowEffect RenderingBias="Quality" Color="White"/>
             </TextBlock.Effect>
         </TextBlock>
+        <ProgressBar x:Name="progUpdates" HorizontalAlignment="Left" Height="24" Margin="126,383,0,0" VerticalAlignment="Top" Width="120" Foreground="#FF35B5E5"/>
+        <TextBlock x:Name="txtUpdates" HorizontalAlignment="Left" Margin="128,385,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
     </Grid>
 </Window>
