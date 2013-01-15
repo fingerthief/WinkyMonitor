@@ -73,12 +73,7 @@ namespace WeatherRSS
                                     temps + "\n" +
                                     "Last Updated: " +
                                    node.Attributes["date"].InnerText);
-                }
-
-                
-
-               
-               
+                }                 
             }
       
             return weather;

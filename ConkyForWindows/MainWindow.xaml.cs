@@ -18,6 +18,7 @@ using System.Net.NetworkInformation;
 using System.Timers;
 using WUApiLib;
 using Winky.Properties;
+using System.Management;
 
 
 namespace Winky
@@ -67,11 +68,23 @@ namespace Winky
             bw2.DoWork +=
                 new DoWorkEventHandler(bw_DoWork2);
             bw2.ProgressChanged +=
-                new ProgressChangedEventHandler(bw2_ProgressChanged);      
+                new ProgressChangedEventHandler(bw2_ProgressChanged);
+
+            bw3.WorkerSupportsCancellation = true;
+            bw3.WorkerReportsProgress = true;
+            bw3.DoWork +=
+                new DoWorkEventHandler(bw_DoWork3);
+            bw3.ProgressChanged +=
+                new ProgressChangedEventHandler(bw3_ProgressChanged);   
         }
 
+        
+
+        
+
         BackgroundWorker bw = new BackgroundWorker();
-        BackgroundWorker bw2 = new BackgroundWorker();
+      public  BackgroundWorker bw2 = new BackgroundWorker();
+      BackgroundWorker bw3 = new BackgroundWorker();
 
         private void cancel_Click(object sender, RoutedEventArgs e)
         {
@@ -106,8 +119,6 @@ namespace Winky
             cpuCounter.CounterName = "% Processor Time";
             cpuCounter.InstanceName = "_Total";
 
-            float[] avg = new float[10];
-
             while (true)
             {
                 //Grabs Needed Info For Disk Space etc...
@@ -141,14 +152,12 @@ namespace Winky
 
                 time = DateTime.Now.ToShortTimeString();
 
-                for (int ii = 0; ii < 9; ii++)
+                for (int ii = 0; ii < 1; ii++)
                 {
-                    avg[ii] = cpuCounter.NextValue();
-                    asdfa = avg.Average();
-                    string aasdf = asdfa.ToString();
-
-                    Thread.Sleep(100);
+                   asdfa = cpuCounter.NextValue();
+                    Thread.Sleep(1000);
                 }
+               
                 worker.ReportProgress((number++));
             }
         }
@@ -211,7 +220,7 @@ namespace Winky
 
         }
 
-        private int number2 = 0;
+        public int number2 = 0;
         private bool netavailable3;
         private string condition;
 
@@ -230,8 +239,8 @@ namespace Winky
                 ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
                 weather = new WeatherRSS.Weather();
                 RSS = weather.CurrentConditions();
-                
                 WeatherImage = new Uri(weather.getImage());
+
                 getUpdates();   
             }
 
@@ -292,7 +301,7 @@ namespace Winky
             newWindow.setTheme();
 
             txtDarkCondition.Text = "";
-
+            txtAvgBox.Text = "Loading....";
             cancel.Opacity = 0;
             
             bw.RunWorkerAsync();
@@ -318,12 +327,12 @@ namespace Winky
             bTimer.Interval = 5000;
             bTimer.Enabled = true;
 
+            //THIS TIMER IS PUBLICLY DECLARED
             // Make timer for System Update check, and weather.
-            // System.Timers.Timer cTimer = new System.Timers.Timer();
             cTimer.Elapsed += new ElapsedEventHandler(fifteenMinutes);
 
             // Set the Interval to 15 minutes.
-            cTimer.Interval = 900000;//900000;
+            cTimer.Interval = 900000;
             cTimer.Enabled = true;
         }
 
@@ -369,7 +378,6 @@ namespace Winky
 
             if (netavailable2 == true)
             {        
-
                 weather = new WeatherRSS.Weather();
 
                 getIP();
@@ -380,7 +388,6 @@ namespace Winky
                 if (Settings.Default.darkCheck == true)
                 {
                     condition = weather.current;
-
                 }  
 
                 getUpdates();
@@ -478,6 +485,74 @@ namespace Winky
         {
             cancel_Click(null, null);
         }
+
+         private void lblUpdates_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (MessageBox.Show("Are You Sure You Want To Install Updates?", "Update Windows", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+
+                lblUpdates.Content = "Installing Updates :";
+                bw3.RunWorkerAsync();
+            }
+            else
+            {
+
+            }
+
+        }
+
+        private int numberUpdate = 0;
+        private void bw_DoWork3(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker3 = sender as BackgroundWorker;
+
+            netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+
+            if (netavailable3 == true)
+            {
+
+                UpdateSessionClass uSession = new UpdateSessionClass();
+                IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
+                ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
+                if (uResult.Updates.Count == 0)
+                {
+                    MessageBox.Show("No Available Updates.");
+                }
+                else if (uResult.Updates.Count != 0)
+                {
+                    UpdateDownloader downloader = uSession.CreateUpdateDownloader();
+                    downloader.Updates = uResult.Updates;
+                    downloader.Download();
+
+                    UpdateCollection updatesToInstall = new UpdateCollection();
+
+                    foreach (IUpdate update in uResult.Updates)
+                    {
+                        if (update.IsDownloaded)
+                            updatesToInstall.Add(update);
+                    }
+
+                    IUpdateInstaller installer = uSession.CreateUpdateInstaller();
+                    installer.Updates = updatesToInstall;
+
+
+                    IInstallationResult installationRes = installer.Install();
+                }
+                
+            }
+
+            worker3.ReportProgress((numberUpdate++));
+            bw3.CancelAsync();
+            bw3.Dispose();
+           
+        }
+
+        private void bw3_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            lblUpdates.Content = "Available Updates :";
+        }
+
+       
     }
  }
 

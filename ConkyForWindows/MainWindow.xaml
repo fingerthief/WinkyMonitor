@@ -59,7 +59,7 @@
                 </TransformGroup>
             </TextBlock.RenderTransform>
         </TextBlock>
-        <Label x:Name="lblUpdates" Content="Available Updates :" HorizontalAlignment="Left" Margin="10,380,0,0" VerticalAlignment="Top" BorderBrush="Black" Foreground="Black"/>
+        <Label x:Name="lblUpdates" Content="Available Updates :" HorizontalAlignment="Left" Margin="10,380,0,0" VerticalAlignment="Top" BorderBrush="Black" Foreground="Black" MouseRightButtonUp="lblUpdates_MouseRightButtonUp"/>
         <TextBox x:Name="txtUpdates" HorizontalAlignment="Left" Height="24" Margin="126,383,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Background="#FFD1D1D1" Focusable="False"/>
         <TextBlock x:Name="txtTime" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Text="Time" Margin="0,5,0,0"  Foreground="Black"/>
         <Label x:Name="lblSysInfo" Content="WInkyMonitor" Margin="0,21,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Height="30" FontSize="16" FontWeight="Bold" Background="#FF35B5E5"/>
@@ -71,7 +71,7 @@
         			UriSource="" />
             </Image.Source>
         </Image>
-        <TextBlock x:Name="txtDarkCondition" Margin="111,436,68,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" FontStyle="Italic" FontWeight="Bold" FontSize="20" Foreground="#FF252525">
+        <TextBlock x:Name="txtDarkCondition" Margin="135,425,44,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" FontStyle="Italic" FontWeight="Bold" FontSize="20" Foreground="#FF252525">
             <TextBlock.Effect>
                 <DropShadowEffect RenderingBias="Quality" Color="White"/>
             </TextBlock.Effect>

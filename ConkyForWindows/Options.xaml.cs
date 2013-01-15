@@ -141,6 +141,9 @@ namespace Winky
                 mainWindow.txtDarkCondition.Opacity = 0;
                 mainWindow.cTimer.Interval = 1;
                 Settings.Default.Save();
+               // mainWindow.fifteenMinutes(null,null);
+                mainWindow.number2 = 0;
+               // mainWindow.bw2.RunWorkerAsync();
             }
             else if (Settings.Default.darkCheck == true)
             {
@@ -155,6 +158,10 @@ namespace Winky
                 Settings.Default.theme = Convert.ToString(mainWindow.grid.Background = mainWindow.Background);
                 Settings.Default.lightCheck = false;
                 Settings.Default.Save();
+                mainWindow.number2 = 0;
+              //  mainWindow.bw2.RunWorkerAsync();
+                
+              //  mainWindow.fifteenMinutes(null, null);
             }
         }
 
@@ -188,6 +195,11 @@ namespace Winky
             {
                 comboDisk.Items.Add(drive.Name);
             }
+        }
+
+        private void Options_Closed(object sender, EventArgs e)
+        {
+            
         }
     }
 }
