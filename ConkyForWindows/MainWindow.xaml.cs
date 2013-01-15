@@ -490,7 +490,7 @@ namespace Winky
             cancel_Click(null, null);
         }
 
-         private void lblUpdates_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void progUpdates_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (MessageBox.Show("Are You Sure You Want To Install Updates?", "Update Windows", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
@@ -504,11 +504,13 @@ namespace Winky
             {
 
             }
-        }
+        } 
+
         private int numberUpdate = 0;
         private int noUpdates = 0;
         private double progressIncrement;
         private int updateAmount = 0;
+        //This thread is initialized once the user
         private void bw_DoWork3(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker3 = sender as BackgroundWorker;
@@ -573,13 +575,14 @@ namespace Winky
                 progUpdates.Value += progressIncrement;
             }
             
-
             if (noUpdates == 1)
             {
                 lblUpdates.Content = "Available Updates :";
                 progUpdates.Value = 0;
+                number2 = 0;
+                bw2.RunWorkerAsync();
             }
-        }    
+        }
     }
  }
 
