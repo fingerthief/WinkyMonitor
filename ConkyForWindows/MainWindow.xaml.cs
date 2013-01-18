@@ -63,35 +63,31 @@ namespace Winky
             bw.ProgressChanged +=
                 new ProgressChangedEventHandler(bw_ProgressChanged);
 
-            bw2.WorkerSupportsCancellation = true;
-            bw2.WorkerReportsProgress = true;
-            bw2.DoWork +=
+            bwStartup.WorkerSupportsCancellation = true;
+            bwStartup.WorkerReportsProgress = true;
+            bwStartup.DoWork +=
                 new DoWorkEventHandler(bw_DoWork2);
-            bw2.ProgressChanged +=
+            bwStartup.ProgressChanged +=
                 new ProgressChangedEventHandler(bw2_ProgressChanged);
 
-            bw3.WorkerSupportsCancellation = true;
-            bw3.WorkerReportsProgress = true;
-            bw3.DoWork +=
+            bwUpdates.WorkerSupportsCancellation = true;
+            bwUpdates.WorkerReportsProgress = true;
+            bwUpdates.DoWork +=
                 new DoWorkEventHandler(bw_DoWork3);
-            bw3.ProgressChanged +=
+            bwUpdates.ProgressChanged +=
                 new ProgressChangedEventHandler(bw3_ProgressChanged);   
         }
 
-        
-
-        
-
         BackgroundWorker bw = new BackgroundWorker();
-        public  BackgroundWorker bw2 = new BackgroundWorker();
-        BackgroundWorker bw3 = new BackgroundWorker();
+        public  BackgroundWorker bwStartup = new BackgroundWorker();
+        BackgroundWorker bwUpdates = new BackgroundWorker();
 
         private void cancel_Click(object sender, RoutedEventArgs e)
         {
             if (bw.WorkerSupportsCancellation == true)
             {
                 bw.CancelAsync();
-                bw2.CancelAsync();
+                bwStartup.CancelAsync();
                 Environment.Exit(0);   
             }
         }
@@ -101,7 +97,7 @@ namespace Winky
             driveSpace;
         public string currentUsageReceived, bytesSent, totalSent, totalReceived, 
             bytesRecieved,updates, ipLocal, ipExternal, time, cpuCount, proc;
-        public float asdfa;
+        public double cpuLoad;
         private int number = 0, nic = 0, driveSelection = 0;
         public bool netavailable, netavailable2, test;
 
@@ -112,8 +108,6 @@ namespace Winky
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {        
             BackgroundWorker worker = sender as BackgroundWorker;
-            
-            cpuCounter = new PerformanceCounter();
 
             cpuCounter.CategoryName = "Processor";
             cpuCounter.CounterName = "% Processor Time";
@@ -126,10 +120,12 @@ namespace Winky
                     = DriveInfo.GetDrives();
 
                 DriveInfo drive = drives[driveSelection];
-                driveSpace = drive.AvailableFreeSpace / 1073741824.004733;
-
+                if (drive.IsReady)
+                {
+                    driveSpace = drive.AvailableFreeSpace / 1073741824.004733;
+                }
+                
                 //Grabs all the needed info for network usage
-
                 netavailable2 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
 
                 if (netavailable2 == true)
@@ -152,11 +148,9 @@ namespace Winky
 
                 time = DateTime.Now.ToShortTimeString();
 
-                for (int ii = 0; ii < 1; ii++)
-                {
-                   asdfa = cpuCounter.NextValue();
-                    Thread.Sleep(1000);
-                }
+                //sleep thread to keep everything updating at a reasonable time.
+                Thread.Sleep(1000);
+                cpuLoad = cpuCounter.NextValue();
                
                 worker.ReportProgress((number++));
             }
@@ -175,8 +169,8 @@ namespace Winky
                 oldLocation = newLocation;
             }
 
-            txtAvgBox.Text = asdfa.ToString("f2") + "%";
-            cpuUsage.Value = asdfa;
+            txtAvgBox.Text = cpuLoad.ToString("f2") + "%";
+            cpuUsage.Value = cpuLoad;
 
             // Prints to textbox network usage
             txtTotalReceived.Text = totalReceived;
@@ -245,8 +239,8 @@ namespace Winky
             }
 
             worker2.ReportProgress((number2++));
-            bw2.CancelAsync();
-            bw2.Dispose();
+            bwStartup.CancelAsync();
+            bwStartup.Dispose();
             
         }
 
@@ -306,7 +300,7 @@ namespace Winky
             cancel.Opacity = 0;
             
             bw.RunWorkerAsync();
-            bw2.RunWorkerAsync();
+            bwStartup.RunWorkerAsync();
 
             RSS = "Collecting Candy...";     
 
@@ -404,28 +398,33 @@ namespace Winky
             //Grabs all the needed info for network usage
             NetworkInterface ni = interfaces[nic];
             
-            upLoadNew = (ni.GetIPv4Statistics().BytesSent / 131072.0);
-            upLoadTotal = upLoadNew - upLoadOld;
-
-            downLoadNew = (ni.GetIPv4Statistics().BytesReceived / 131072.0);
-            downLoadTotal = downLoadNew - downLoadOld;
-
             //changes text between Mbps and Kbps
             if (netavailable == true)
             {
-                if (upLoadTotal > 1 && downLoadTotal > 1)
+                upLoadNew = (ni.GetIPv4Statistics().BytesSent / 131072.0);
+                upLoadTotal = upLoadNew - upLoadOld;
+
+                if (upLoadTotal > 1)
                 {
                     bytesSent = (upLoadTotal).ToString("f2") + " Mbps";
                     upLoadOld = upLoadNew;
-
-                    bytesRecieved = (downLoadTotal).ToString("f2") + " Mbps";
-                    downLoadOld = downLoadNew;
                 }
                 else
                 {
                     bytesSent = (upLoadTotal * 1024).ToString("f2") + " Kbps";
                     upLoadOld = upLoadNew;
+                }
 
+                downLoadNew = (ni.GetIPv4Statistics().BytesReceived / 131072.0);
+                downLoadTotal = downLoadNew - downLoadOld;
+
+                if (downLoadTotal > 1)
+                {
+                    bytesRecieved = (downLoadTotal).ToString("f2") + " Mbps";
+                    downLoadOld = downLoadNew;
+                }
+                else
+                {
                     bytesRecieved = (downLoadTotal * 1024).ToString("f2") + " Kbps";
                     downLoadOld = downLoadNew;
                 }
@@ -498,7 +497,7 @@ namespace Winky
                 numberUpdate = 0;
                 noUpdates = 0;
                 lblUpdates.Content = "Installing Updates :";
-                bw3.RunWorkerAsync();
+                bwUpdates.RunWorkerAsync();
             }
             else
             {
@@ -553,19 +552,19 @@ namespace Winky
 
                             updatesToInstall.Add(update);
 
-                        IUpdateInstaller installer = uSession.CreateUpdateInstaller();
-                        installer.Updates = updatesToInstall;
+                            IUpdateInstaller installer = uSession.CreateUpdateInstaller();
+                            installer.Updates = updatesToInstall;
 
-                        IInstallationResult installationRes = installer.Install();
+                            IInstallationResult installationRes = installer.Install();
 
-                        worker3.ReportProgress((numberUpdate++));
+                            worker3.ReportProgress((numberUpdate++));
                     }
                 }
             }
             noUpdates = 0;
             noUpdates++;
-            bw3.CancelAsync();
-            bw3.Dispose();      
+            bwUpdates.CancelAsync();
+            bwUpdates.Dispose();      
         }
 
         private void bw3_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -580,7 +579,7 @@ namespace Winky
                 lblUpdates.Content = "Available Updates :";
                 progUpdates.Value = 0;
                 number2 = 0;
-                bw2.RunWorkerAsync();
+                bwStartup.RunWorkerAsync();
             }
         }
     }
