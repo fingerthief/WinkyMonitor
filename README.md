@@ -4,14 +4,15 @@ WinkyMonitor
 System Monitor For Windows
 
 ######Features Include -
-1. All relevent system usage 
-2. Weather
-3. Real Time Data Usage
-4. Total Data Usage
-5. Ping Time
-6. External and Local IP Address
-7. Disk Usage - Selectable Drive in settings
-8. Available Windows Updates - Number
+1. Install Windows Updates from program - hassle free
+2. All relevent system usage 
+3. Weather
+4. Real Time Data Usage
+5. Total Data Usage
+6. Ping Time
+7. External and Local IP Address
+8. Disk Usage - Selectable Drive in settings
+9. Available Windows Updates - Number
 
 ######Configurable Settings Include -
 1. Zip code for your weather location
@@ -22,3 +23,4 @@ System Monitor For Windows
 ######Usability
 1. Double click the form to lock into place
 2. Wherever you lock the form in place is the place it will startup everytime the program loads.
+3. Right click the available updates box to install Windows Updates
