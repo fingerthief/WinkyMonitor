@@ -97,7 +97,7 @@ namespace Winky
             driveSpace;
         public string currentUsageReceived, bytesSent, totalSent, totalReceived, 
             bytesRecieved,updates, ipLocal, ipExternal, time, cpuCount, proc;
-        public double cpuLoad;
+        public float cpuLoad;
         private int number = 0, nic = 0, driveSelection = 0;
         public bool netavailable, netavailable2, test;
 
@@ -147,11 +147,12 @@ namespace Winky
                 ramPercent = ramUsed / ramTotal * 100;
 
                 time = DateTime.Now.ToShortTimeString();
-
-                //sleep thread to keep everything updating at a reasonable time.
+                
+                //Properly measure CPU load
+                cpuLoad = cpuCounter.NextValue();
                 Thread.Sleep(1000);
                 cpuLoad = cpuCounter.NextValue();
-               
+                      
                 worker.ReportProgress((number++));
             }
         }

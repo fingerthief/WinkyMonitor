@@ -70,6 +70,7 @@ namespace Winky
 
             loadDevices();          
         }
+
         public double lightHeight;
         public double darkHeight;
 
@@ -87,7 +88,6 @@ namespace Winky
             }
         }
 
-
         public void setHeight()
         {
             if (Settings.Default.lightCheck == true)
@@ -103,7 +103,6 @@ namespace Winky
  
         }
     
-
         //Saves changes and then close the form
         public void btnSave_Click(object sender, RoutedEventArgs e)
         {
@@ -117,9 +116,6 @@ namespace Winky
             Settings.Default.Save();
             this.Close();
         }
-
-        
-
 
         public void settingsSave()
         {       
