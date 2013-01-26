@@ -115,37 +115,36 @@ namespace Winky
 
             while (true)
             {
-                //Grabs Needed Info For Disk Space etc...
-                DriveInfo[] drives
-                    = DriveInfo.GetDrives();
-
-                DriveInfo drive = drives[driveSelection];
-                if (drive.IsReady)
+                try
                 {
-                    driveSpace = drive.AvailableFreeSpace / 1073741824.004733;
-                }
-                
-                //Grabs all the needed info for network usage
-                netavailable2 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+                    //Grabs Needed Info For Disk Space etc...
+                    DriveInfo[] drives
+                        = DriveInfo.GetDrives();
 
-                if (netavailable2 == true)
-                {
-                    NetworkInterface ni = interfaces[nic];
+                    DriveInfo drive = drives[driveSelection];
+                    if (drive.IsReady)
+                    {
+                        driveSpace = drive.AvailableFreeSpace / 1073741824.004733;
+                    }
 
-                    totalSent = (ni.GetIPv4Statistics().BytesSent / 1048576.0).ToString("f2") + " MB";
-                    totalReceived = (ni.GetIPv4Statistics().BytesReceived / 1048576.0).ToString("f2") + " MB";
-                }
-                else if (netavailable2 == false)
-                {
-                    totalReceived = "Disconnected";
-                    totalSent = "Disconnected";
-                    updates = "Disconnected";
-                }
+                    //Grabs all the needed info for network usage
+                    netavailable2 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
 
-                ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
-                ramUsed = ramTotal - ramFree;
-                ramPercent = ramUsed / ramTotal * 100;
+                    if (netavailable2 == true)
+                    {
+                        NetworkInterface ni = interfaces[nic];
 
+                        totalSent = (ni.GetIPv4Statistics().BytesSent / 1048576.0).ToString("f2") + " MB";
+                        totalReceived = (ni.GetIPv4Statistics().BytesReceived / 1048576.0).ToString("f2") + " MB";
+                    }
+                    else if (netavailable2 == false)
+                    {
+                        totalReceived = "Disconnected";
+                        totalSent = "Disconnected";
+                        updates = "Disconnected";
+                    }
+
+<<<<<<< HEAD
                 time = DateTime.Now.ToShortTimeString();
                 
                 //Properly measure CPU load
@@ -154,6 +153,25 @@ namespace Winky
                 cpuLoad = cpuCounter.NextValue();
                       
                 worker.ReportProgress((number++));
+=======
+                    ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
+                    ramUsed = ramTotal - ramFree;
+                    ramPercent = ramUsed / ramTotal * 100;
+
+                    time = DateTime.Now.ToShortTimeString();
+
+                    //Properly measure CPU load
+                    cpuLoad = cpuCounter.NextValue();
+                    Thread.Sleep(1000);
+                    cpuLoad = cpuCounter.NextValue();
+
+                    worker.ReportProgress((number++));
+                }
+                catch(Exception)
+                {
+                    MessageBox.Show("Something Went Wrong! - DoWork", "Uh Oh!");
+                }
+>>>>>>> origin/Development
             }
         }
 
@@ -222,26 +240,34 @@ namespace Winky
         //This thread is for code that needs to be ran just at startup
         private void bw_DoWork2(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker2 = sender as BackgroundWorker;
-
-            netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
-
-            if (netavailable3 == true && number2 < 1)
+            try
             {
-                getIP();
-                pingEvent(null, null);
-                OnTimedEvent(null, null);
-                ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
-                weather = new WeatherRSS.Weather();
-                RSS = weather.CurrentConditions();
-                WeatherImage = new Uri(weather.getImage());
+                BackgroundWorker worker2 = sender as BackgroundWorker;
 
-                getUpdates();   
+                netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+
+                if (netavailable3 == true && number2 < 1)
+                {
+                    getIP();
+                    pingEvent(null, null);
+                    OnTimedEvent(null, null);
+                    ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
+                    weather = new WeatherRSS.Weather();
+                    RSS = weather.CurrentConditions();
+                    WeatherImage = new Uri(weather.getImage());
+
+                    getUpdates();
+                }
+
+                worker2.ReportProgress((number2++));
+                bwStartup.CancelAsync();
+                bwStartup.Dispose();
             }
+            catch (Exception)
+            {
 
-            worker2.ReportProgress((number2++));
-            bwStartup.CancelAsync();
-            bwStartup.Dispose();
+                MessageBox.Show("Something Went Wrong! - DoWork2", "Uh Oh");
+            }
             
         }
 
@@ -516,42 +542,44 @@ namespace Winky
             BackgroundWorker worker3 = sender as BackgroundWorker;
 
             netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
-
-            if (netavailable3 == true)
+            try
             {
-                UpdateSessionClass uSession = new UpdateSessionClass();
-                IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
-                ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
 
-                updateAmount = uResult.Updates.Count;
-
-                if (uResult.Updates.Count == 0)
+                if (netavailable3 == true)
                 {
-                    MessageBox.Show("No Available Updates.");
-                    noUpdates++;
-                    worker3.ReportProgress((numberUpdate++));
-                }
-                else if (uResult.Updates.Count != 0)
-                {
+                    UpdateSessionClass uSession = new UpdateSessionClass();
+                    IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
+                    ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
 
-                    UpdateDownloader downloader = uSession.CreateUpdateDownloader();
-                    downloader.Updates = uResult.Updates;
-                    progressIncrement = (100 / uResult.Updates.Count) / 2;
+                    updateAmount = uResult.Updates.Count;
 
-                    foreach (IUpdate update in uResult.Updates)
+                    if (uResult.Updates.Count == 0)
                     {
-                        downloader.Download();
+                        MessageBox.Show("No Available Updates.");
+                        noUpdates++;
                         worker3.ReportProgress((numberUpdate++));
-                        
                     }
-                    
-                    UpdateCollection updatesToInstall = new UpdateCollection();
-
-                    foreach (IUpdate update in uResult.Updates)
+                    else if (uResult.Updates.Count != 0)
                     {
-                        if (update.IsDownloaded)
 
-                            updatesToInstall.Add(update);
+                        UpdateDownloader downloader = uSession.CreateUpdateDownloader();
+                        downloader.Updates = uResult.Updates;
+                        progressIncrement = (100 / uResult.Updates.Count) / 2;
+
+                        foreach (IUpdate update in uResult.Updates)
+                        {
+                            downloader.Download();
+                            worker3.ReportProgress((numberUpdate++));
+
+                        }
+
+                        UpdateCollection updatesToInstall = new UpdateCollection();
+
+                        foreach (IUpdate update in uResult.Updates)
+                        {
+                            if (update.IsDownloaded)
+
+                                updatesToInstall.Add(update);
 
                             IUpdateInstaller installer = uSession.CreateUpdateInstaller();
                             installer.Updates = updatesToInstall;
@@ -559,13 +587,18 @@ namespace Winky
                             IInstallationResult installationRes = installer.Install();
 
                             worker3.ReportProgress((numberUpdate++));
+                        }
                     }
                 }
+                noUpdates = 0;
+                noUpdates++;
+                bwUpdates.CancelAsync();
+                bwUpdates.Dispose();
             }
-            noUpdates = 0;
-            noUpdates++;
-            bwUpdates.CancelAsync();
-            bwUpdates.Dispose();      
+            catch (Exception)
+            {    
+                MessageBox.Show("Something Went Wrong! - DoWork3", "Uh Oh");
+            }  
         }
 
         private void bw3_ProgressChanged(object sender, ProgressChangedEventArgs e)
