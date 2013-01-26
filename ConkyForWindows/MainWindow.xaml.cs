@@ -144,16 +144,16 @@ namespace Winky
                         updates = "Disconnected";
                     }
 
-<<<<<<< HEAD
-                time = DateTime.Now.ToShortTimeString();
+
+                    time = DateTime.Now.ToShortTimeString();
                 
-                //Properly measure CPU load
-                cpuLoad = cpuCounter.NextValue();
-                Thread.Sleep(1000);
-                cpuLoad = cpuCounter.NextValue();
+                    //Properly measure CPU load
+                    cpuLoad = cpuCounter.NextValue();
+                    Thread.Sleep(1000);
+                    cpuLoad = cpuCounter.NextValue();
                       
-                worker.ReportProgress((number++));
-=======
+                    worker.ReportProgress((number++));
+
                     ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
                     ramUsed = ramTotal - ramFree;
                     ramPercent = ramUsed / ramTotal * 100;
@@ -171,7 +171,7 @@ namespace Winky
                 {
                     MessageBox.Show("Something Went Wrong! - DoWork", "Uh Oh!");
                 }
->>>>>>> origin/Development
+
             }
         }
 
