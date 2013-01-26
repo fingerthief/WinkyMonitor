@@ -143,17 +143,7 @@ namespace Winky
                         totalSent = "Disconnected";
                         updates = "Disconnected";
                     }
-
-
-                    time = DateTime.Now.ToShortTimeString();
-                
-                    //Properly measure CPU load
-                    cpuLoad = cpuCounter.NextValue();
-                    Thread.Sleep(1000);
-                    cpuLoad = cpuCounter.NextValue();
-                      
-                    worker.ReportProgress((number++));
-
+              
                     ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
                     ramUsed = ramTotal - ramFree;
                     ramPercent = ramUsed / ramTotal * 100;
