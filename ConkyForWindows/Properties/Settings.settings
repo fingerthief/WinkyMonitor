@@ -41,5 +41,17 @@
     <Setting Name="heightNumber" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="beepEnable" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="beepDisable" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="alarmPercent" Type="System.Double" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ramIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">8</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

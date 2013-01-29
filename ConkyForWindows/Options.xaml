@@ -1,17 +1,34 @@
 ﻿<Window x:Name="Options" x:Class="Winky.Window1"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Settings" Height="237" Width="309"  Loaded="options_Loaded" ResizeMode="NoResize" Closed="Options_Closed" >
+        Title="Settings" Height="237" Width="339"  Loaded="options_Loaded" ResizeMode="NoResize" Closed="Options_Closed" >
     <Grid x:Name="winkyGrid" Margin="0,0,-8,-5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Label x:Name="lblInformation" Content="Enter Your ZIP Code :" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top" Height="27" Width="130"/>
         <TextBox x:Name="txtWeatherLocation" HorizontalAlignment="Left" Height="23" Margin="140,15,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="73"/>
         <Label x:Name="lblNic" Content="Please Select Your NIC" HorizontalAlignment="Left" Margin="1,54,0,0" VerticalAlignment="Top"/>
         <ComboBox x:Name="comboNic" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0" />
-        <ComboBox x:Name="comboDisk" HorizontalAlignment="Left" Margin="162,80,0,0" VerticalAlignment="Top" Width="120"/>
-        <Label x:Name="lblDrives" Content="Please Select your Drive" HorizontalAlignment="Left" Margin="153,54,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="104,173,0,0" Width="75" Height="23" VerticalAlignment="Top" Click="btnSave_Click"/>
-        <RadioButton Content="Light" Height="16" HorizontalAlignment="Left" Margin="12,151,0,0" Name="lightButton" VerticalAlignment="Top" Width="56" />
-        <RadioButton Content="Holo" Height="16" HorizontalAlignment="Left" Margin="12,173,0,0" Name="darkButton" VerticalAlignment="Top" Width="71" />
-        <Label x:Name="lblTheme" Content="Choose Your Theme" HorizontalAlignment="Left" Margin="10,120,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="comboDisk" HorizontalAlignment="Left" Margin="188,80,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label x:Name="lblDrives" Content="Please Select your Drive" HorizontalAlignment="Left" Margin="179,54,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="88,173,0,0" Width="75" Height="23" VerticalAlignment="Top" Click="btnSave_Click"/>
+        <RadioButton Content="Light" Height="16" HorizontalAlignment="Left" Margin="12,163,0,0" Name="lightButton" VerticalAlignment="Top" Width="56" />
+        <RadioButton Content="Holo" Height="16" HorizontalAlignment="Left" Margin="12,185,0,0" Name="darkButton" VerticalAlignment="Top" Width="71" />
+        <Label x:Name="lblTheme" Content="Choose Your Theme" HorizontalAlignment="Left" Margin="10,132,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblRamAlarm" Content="Ram Alarm  %" HorizontalAlignment="Left" Margin="179,132,0,0" VerticalAlignment="Top" Width="94"/>
+        <RadioButton x:Name="chkEnabled" Content="Enable" Margin="184,158,71,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="True" GroupName="Ram"/>
+        <RadioButton x:Name="chkDisabled" Content="Disable" Margin="184,178,76,0" VerticalAlignment="Top" GroupName="Ram"/>
+        <ComboBox x:Name="comboRam" HorizontalAlignment="Left" Margin="262,134,0,0" VerticalAlignment="Top" Width="41">
+            <ComboBoxItem Content="10"/>
+            <ComboBoxItem Content="20"/>
+            <ComboBoxItem Content="30"/>
+            <ComboBoxItem Content="40"/>
+            <ComboBoxItem Content="50"/>
+            <ComboBoxItem Content="60"/>
+            <ComboBoxItem Content="70"/>
+            <ComboBoxItem Content="80"/>
+            <ComboBoxItem Content="90"/>
+        </ComboBox>
     </Grid>
 </Window>

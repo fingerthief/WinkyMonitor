@@ -147,7 +147,11 @@ namespace Winky
                     ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
                     ramUsed = ramTotal - ramFree;
                     ramPercent = ramUsed / ramTotal * 100;
-
+                    if (bwStartup.IsBusy != true && Settings.Default.beepEnable == true)
+                    {
+                        bwStartup.RunWorkerAsync();
+                    }
+                    
                     time = DateTime.Now.ToShortTimeString();
 
                     //Properly measure CPU load
@@ -156,6 +160,9 @@ namespace Winky
                     cpuLoad = cpuCounter.NextValue();
 
                     worker.ReportProgress((number++));
+                    
+                   
+
                 }
                 catch(Exception)
                 {
@@ -202,11 +209,12 @@ namespace Winky
             Convert.ToString(ramFree);
             Convert.ToString(ramPercent);
             Convert.ToString(driveSpace);
-
+            
             //Prints free and used RAM to textboxes
             txtRam.Text = ramFree.ToString("f2") + " GB";
-            txtRamPercent.Text = ramPercent.ToString("f2") + " %";
+            
 
+            txtRamPercent.Text = ramPercent.ToString("f2") + " %";
             //Prints Disk Drive Free Space
             txtDriveSpace.Text = driveSpace.ToString("f2") + " GB";
 
@@ -226,39 +234,55 @@ namespace Winky
         public int number2 = 0;
         private bool netavailable3;
         private string condition;
+        public bool enableBeep = true;
 
         //This thread is for code that needs to be ran just at startup
         private void bw_DoWork2(object sender, DoWorkEventArgs e)
         {
-            try
+            while (enableBeep == true)
             {
-                BackgroundWorker worker2 = sender as BackgroundWorker;
-
-                netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
-
-                if (netavailable3 == true && number2 < 1)
+                try
                 {
-                    getIP();
-                    pingEvent(null, null);
-                    OnTimedEvent(null, null);
-                    ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
-                    weather = new WeatherRSS.Weather();
-                    RSS = weather.CurrentConditions();
-                    WeatherImage = new Uri(weather.getImage());
+                    BackgroundWorker worker2 = sender as BackgroundWorker;
 
-                    getUpdates();
+                    netavailable3 = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+
+                    if (netavailable3 == true && number2 < 1)
+                    {
+                        getIP();
+                        pingEvent(null, null);
+                        OnTimedEvent(null, null);
+                        ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
+                        weather = new WeatherRSS.Weather();
+                        RSS = weather.CurrentConditions();
+                        WeatherImage = new Uri(weather.getImage());
+
+                        getUpdates();
+                        worker2.ReportProgress((number2++));
+                    }
+                    if (number > 3 && Settings.Default.beepEnable == true)
+                    {
+                        if (ramPercent > Settings.Default.alarmPercent)
+                        {
+                            Console.Beep(3000, 2000);
+                        }
+
+                    }
+                    else if (Settings.Default.beepEnable == false)
+                    {
+                        enableBeep = false;
+                        bwStartup.CancelAsync();
+                        bwStartup.Dispose();
+                    }
+
+                    worker2.ReportProgress((number2++));
                 }
+                catch (Exception)
+                {
 
-                worker2.ReportProgress((number2++));
-                bwStartup.CancelAsync();
-                bwStartup.Dispose();
+                    MessageBox.Show("Something Went Wrong! - DoWork2", "Uh Oh");
+                }
             }
-            catch (Exception)
-            {
-
-                MessageBox.Show("Something Went Wrong! - DoWork2", "Uh Oh");
-            }
-            
         }
 
         private void bw2_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -308,7 +332,6 @@ namespace Winky
             }
             newWindow = new Winky.Window1(this);
             newWindow.height();
-
             newWindow.setTheme();
 
             txtDarkCondition.Text = "";
@@ -581,6 +604,7 @@ namespace Winky
                     }
                 }
                 noUpdates = 0;
+                enableBeep = true;
                 noUpdates++;
                 bwUpdates.CancelAsync();
                 bwUpdates.Dispose();

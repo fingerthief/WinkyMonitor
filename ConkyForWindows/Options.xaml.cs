@@ -57,7 +57,10 @@ namespace Winky
             comboDisk.SelectedIndex = Settings.Default.driveSelection;
             lightButton.IsChecked = Settings.Default.lightCheck;
             darkButton.IsChecked = Settings.Default.darkCheck;
-            
+            chkDisabled.IsChecked = Settings.Default.beepDisable;
+            chkEnabled.IsChecked = Settings.Default.beepEnable;
+            comboRam.SelectedIndex =Settings.Default.ramIndex;
+
             if (darkButton.IsChecked == true)
             {
                 winkyGrid.Background = mainWindow.grid.Background;
@@ -102,7 +105,6 @@ namespace Winky
             }
  
         }
-    
         //Saves changes and then close the form
         public void btnSave_Click(object sender, RoutedEventArgs e)
         {
@@ -112,6 +114,11 @@ namespace Winky
             Settings.Default.txtWOEID = txtWeatherLocation.Text;
             Settings.Default.darkCheck = Convert.ToBoolean(darkButton.IsChecked);
             Settings.Default.lightCheck = Convert.ToBoolean(lightButton.IsChecked);
+            Settings.Default.beepDisable = Convert.ToBoolean(chkDisabled.IsChecked);
+            Settings.Default.beepEnable = Convert.ToBoolean(chkEnabled.IsChecked);
+            Settings.Default.alarmPercent = Convert.ToDouble(comboRam.Text);
+            Settings.Default.ramIndex = comboRam.SelectedIndex;
+            mainWindow.enableBeep = true;
             settingsSave();
             Settings.Default.Save();
             this.Close();
@@ -155,9 +162,6 @@ namespace Winky
                 mainWindow.number2 = 0;
             }
         }
-
-       
-
 
         //a method that is called from the main class to set theme on startup
         internal void setTheme()
