@@ -271,8 +271,6 @@ namespace Winky
                     else if (Settings.Default.beepEnable == false)
                     {
                         enableBeep = false;
-                        bwStartup.CancelAsync();
-                        bwStartup.Dispose();
                     }
 
                     worker2.ReportProgress((number2++));
@@ -627,7 +625,6 @@ namespace Winky
                 lblUpdates.Content = "Available Updates :";
                 progUpdates.Value = 0;
                 number2 = 0;
-                bwStartup.RunWorkerAsync();
             }
         }
     }
