@@ -9,8 +9,8 @@ namespace WeatherRSS
     {
 
         private string location = Settings.Default.textboxLocation;
-        public string current;
-        public string CurrentConditions()
+        public string current = "";
+       public string CurrentConditions()
         {
             string city = "";
             string weather = "";
@@ -75,7 +75,8 @@ namespace WeatherRSS
                                    node.Attributes["date"].InnerText);
                 }                 
             }
-      
+
+            
             return weather;
             
         }

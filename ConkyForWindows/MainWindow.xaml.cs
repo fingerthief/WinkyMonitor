@@ -19,6 +19,7 @@ using System.Timers;
 using WUApiLib;
 using Winky.Properties;
 using System.Management;
+using System.Threading.Tasks;
 
 
 namespace Winky
@@ -105,6 +106,7 @@ namespace Winky
         public PerformanceCounter cpuCounter = new PerformanceCounter();  
          
         //This thread contains all the code that needs to be running constantly 
+        
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {        
             BackgroundWorker worker = sender as BackgroundWorker;
@@ -115,6 +117,7 @@ namespace Winky
 
             while (true)
             {
+
                 try
                 {
                     //Grabs Needed Info For Disk Space etc...
@@ -143,10 +146,11 @@ namespace Winky
                         totalSent = "Disconnected";
                         updates = "Disconnected";
                     }
-              
-                    ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
-                    ramUsed = ramTotal - ramFree;
-                    ramPercent = ramUsed / ramTotal * 100;
+                        ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
+                        ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
+                        ramUsed = ramTotal - ramFree;
+                        ramPercent = ramUsed / ramTotal * 100;
+
                     if (bwStartup.IsBusy != true && Settings.Default.beepEnable == true)
                     {
                         bwStartup.RunWorkerAsync();
@@ -160,20 +164,17 @@ namespace Winky
                     cpuLoad = cpuCounter.NextValue();
 
                     worker.ReportProgress((number++));
-                    
-                   
-
                 }
                 catch(Exception)
                 {
                     MessageBox.Show("Something Went Wrong! - DoWork", "Uh Oh!");
                 }
-
             }
         }
+         
 
         private string oldLocation = Settings.Default.textboxLocation, newLocation;
-
+        
         //Update GUI here with info from the background thread
         private void bw_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -194,12 +195,20 @@ namespace Winky
 
             if (netavailable == true)
             {
+                txtPing.Text = pingtime;
+                txtLocal.Text = ipLocal;
+                txtExternal.Text = ipExternal;
                 txtNetOut.Text = bytesSent;
                 txtNetIn.Text = bytesRecieved;
             }
-            txtPing.Text = pingtime;
-            txtLocal.Text = ipLocal;
-            txtExternal.Text = ipExternal;
+            else
+            {
+                txtPing.Text = "Disconnected";
+                txtLocal.Text = "Disconnected";
+                txtExternal.Text = "Disconnected"; 
+                txtNetIn.Text = "Disconnected";
+                txtNetOut.Text = "Disconnected";
+            }
             nic = Settings.Default.nic;
             driveSelection = Settings.Default.driveSelection;
 
@@ -213,7 +222,6 @@ namespace Winky
             //Prints free and used RAM to textboxes
             txtRam.Text = ramFree.ToString("f2") + " GB";
             
-
             txtRamPercent.Text = ramPercent.ToString("f2") + " %";
             //Prints Disk Drive Free Space
             txtDriveSpace.Text = driveSpace.ToString("f2") + " GB";
@@ -224,23 +232,30 @@ namespace Winky
             //prints the time
             txtTime.Text = time;
 
-            //prints the weather conditions and weather icon 
-            txtWeather.Text = RSS;
+            weather = new WeatherRSS.Weather();
+            if (netavailable == true)
+            {
+                txtWeather.Text = RSS;
+            }
+            else
+            {
+                txtWeather.Text = "Disconnected";
+            }
             txtDarkCondition.Text = weather.current;
+
             imgCloudy.Source = new BitmapImage(WeatherImage);
-
         }
-
+         
         public int number2 = 0;
         private bool netavailable3;
         private string condition;
         public bool enableBeep = true;
-
+        
         //This thread is for code that needs to be ran just at startup
         private void bw_DoWork2(object sender, DoWorkEventArgs e)
-        {
+        { 
             while (enableBeep == true)
-            {
+            { 
                 try
                 {
                     BackgroundWorker worker2 = sender as BackgroundWorker;
@@ -250,13 +265,17 @@ namespace Winky
                     if (netavailable3 == true && number2 < 1)
                     {
                         getIP();
+                       
                         pingEvent(null, null);
                         OnTimedEvent(null, null);
-                        ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
-                        weather = new WeatherRSS.Weather();
+                        
+                       
+                        //if ( new WeatherRSS.Weather() != null)
+                       // {
+                             weather = new WeatherRSS.Weather();
                         RSS = weather.CurrentConditions();
-                        WeatherImage = new Uri(weather.getImage());
-
+                            WeatherImage = new Uri(weather.getImage());
+                       // }
                         getUpdates();
                         worker2.ReportProgress((number2++));
                     }
@@ -266,7 +285,6 @@ namespace Winky
                         {
                             Console.Beep(3000, 2000);
                         }
-
                     }
                     else if (Settings.Default.beepEnable == false)
                     {
@@ -312,8 +330,20 @@ namespace Winky
 
         int GetPingMS(string hostNameOrAddress)
         {
-            System.Net.NetworkInformation.Ping ping = new System.Net.NetworkInformation.Ping();
-            return Convert.ToInt32(ping.Send(hostNameOrAddress).RoundtripTime);
+           
+            if (netavailable2 == true)
+            {
+
+                System.Net.NetworkInformation.Ping ping = new System.Net.NetworkInformation.Ping();
+                return Convert.ToInt32(ping.Send(hostNameOrAddress).RoundtripTime);
+                
+            }
+            else
+            {
+                return 0;
+            }
+            
+            
         }
 
         public System.Timers.Timer cTimer = new System.Timers.Timer();
@@ -560,8 +590,12 @@ namespace Winky
                 {
                     UpdateSessionClass uSession = new UpdateSessionClass();
                     IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
-                    ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
 
+                   // ISearchResult uResult2 = uSearcher.
+                    
+
+                    ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
+                    
                     updateAmount = uResult.Updates.Count;
 
                     if (uResult.Updates.Count == 0)

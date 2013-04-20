@@ -61,7 +61,7 @@
         </TextBlock>
         <Label x:Name="lblUpdates" Content="Available Updates :" HorizontalAlignment="Left" Margin="10,380,0,0" VerticalAlignment="Top" BorderBrush="Black" Foreground="Black"/>
         <TextBlock x:Name="txtTime" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Text="Time" Margin="0,5,0,0"  Foreground="Black"/>
-        <Label x:Name="lblSysInfo" Content="WInkyMonitor" Margin="0,21,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Height="30" FontSize="16" FontWeight="Bold" Background="#FF35B5E5"/>
+        <Label x:Name="lblSysInfo" Content="WinkyMonitor" Margin="0,21,0,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Height="30" FontSize="16" FontWeight="Bold" Background="#FF35B5E5"/>
         <Button Content="S" Height="12" HorizontalAlignment="Left" Margin="234,0,0,0" x:Name="btnOptions" VerticalAlignment="Top" Width="14" Click="settings_Click" FontSize="6" Background="#FF35B5E5" ToolTip="Settings" />
         <Image x:Name="imgCloudy" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" Width="70" OpacityMask="Black" Margin="157,420,0,0" >
             <Image.Source>
