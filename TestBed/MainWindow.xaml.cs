@@ -45,7 +45,7 @@ namespace TestBed
                     //My sketchy attempt at making an animation
                     for (int i = 0; i < 100; i++)
                     {
-                        height = (200.00 / 100.00) * i;
+                        height = (180.00 / 100.00) * i;
                         winOpacity += 0.01;
 
                         Thread.Sleep(3);
@@ -62,27 +62,28 @@ namespace TestBed
             NetworkUsage();
             PercentOfDayFinished();
            // CheckForUpdates();
-            MoneyEarned();
+           // MoneyEarned();
             SystemInfo();
             GetWeather();
         }
 
         private void SystemInfo()
         {
-            PerformanceCounter cpuCounter = new PerformanceCounter();
-
-            cpuCounter.CategoryName = "Processor";
-            cpuCounter.CounterName = "% Processor Time";
-            cpuCounter.InstanceName = "_Total";
 
             double ramFree, ramTotal, ramUsed, driveTotal;
 
             try
             {
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
                     while (true)
                     {
+                        PerformanceCounter cpuCounter = new PerformanceCounter();
+
+                        cpuCounter.CategoryName = "Processor";
+                        cpuCounter.CounterName = "% Processor Time";
+                        cpuCounter.InstanceName = "_Total";
+
                         //Grabs Needed Info For Disk Space etc...
                         DriveInfo[] drives
                             = DriveInfo.GetDrives();
@@ -114,8 +115,10 @@ namespace TestBed
                         cpuCounter.NextValue();
                         Thread.Sleep(1000);
                         cpuUsage = cpuCounter.NextValue();
+
+                        cpuCounter.Dispose();
                     }
-                }));
+                });
             }
             catch (Exception ex)
             {
@@ -130,13 +133,13 @@ namespace TestBed
                 double upLoadNew, upLoadTotal, upLoadOld = 0, downLoadNew,
                 downLoadTotal, downLoadOld = 0;
 
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
-                    //Grabs all the needed info for network usage
-                    NetworkInterface ni = interfaces[Config.Default.NIC];
-
                     while (true)
                     {
+                        //Grabs all the needed info for network usage
+                        NetworkInterface ni = interfaces[Config.Default.NIC];
+
                         if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
                         {
                             upLoadNew = (ni.GetIPv4Statistics().BytesSent / 131072.0);
@@ -170,7 +173,7 @@ namespace TestBed
 
                         Thread.Sleep(1000);
                     }
-                }));
+                });
             }
             catch (Exception ex)
             {
@@ -182,7 +185,7 @@ namespace TestBed
         {
             try
             {
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
                     while (true)
                     {
@@ -195,7 +198,7 @@ namespace TestBed
                         //Will check every 15 minutes
                         Thread.Sleep(900000);
                     }
-                }));
+                });
             }
             catch (Exception ex)
             {
@@ -207,7 +210,7 @@ namespace TestBed
         {
             try
             {
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
                     
                     while (true)
@@ -230,7 +233,7 @@ namespace TestBed
                         }
                         Thread.Sleep(30);
                     }
-                }));
+                });
             }
             catch (Exception ex)
             {
@@ -238,69 +241,25 @@ namespace TestBed
             }
         }
 
-        private void MoneyEarned()
-        {
-            try
-            {
-                Task.Factory.StartNew(new Action(() =>
-                {
-                    while (true)
-                    {
-                        //Total seconds in 8 hour day 28800
-                        TimeSpan CurrentTimeSpan = (DateTime.Now - new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Config.Default.StartHour, Config.Default.StartMinute, 0, 0));
-
-                        DateTime dtStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Config.Default.StartHour, Config.Default.StartMinute, 0, 0);
-                        DateTime dtEnd = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Config.Default.EndHours, Config.Default.EndHoursMins, 0, 0);
-
-                        //Lets check if it's lunch time
-                        if (DateTime.Now > new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 12, 0, 0, 0) &&
-                            DateTime.Now < new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 13, 0, 0, 0))
-                        {
-                            isLunch = true;
-                        } //Make sure it's actually part of the work day
-                        else if (DateTime.Now > dtStart &&
-                            DateTime.Now < dtEnd)
-                        {
-                            isLunch = false;
-                            double secondsToday = CurrentTimeSpan.TotalSeconds;
-
-                            if (DateTime.Now.Hour > 12)
-                            {
-                                //Net Pay after lunch, 3600 being seconds in an hour
-                                moneyMade = (Config.Default.Money / 3600) * (secondsToday - 3600);
-                            }
-                            else
-                            {
-                                //Net Pay before lunch, 3600 being seconds in an hour
-                                moneyMade = (Config.Default.Money / 3600) * secondsToday;
-                            }
-                        }
-                        Thread.Sleep(1000);
-                    }
-                }));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
 
         public void GetWeather()
         {
             //Instantiate the weather class
             Weather Weather = new Weather();
 
-            Task.Factory.StartNew(new Action(() =>
+            Task.Factory.StartNew(() =>
                {
                    while (true)
                    {
                        //return a formatted string of the weather
                        currentWeather = Weather.GetWeatherXMLAndReturnString(Config.Default.ZIP);
 
+                       Weather = null;
+
                        //Check every fifteen minutes
                        Thread.Sleep(900000);
                    }
-               }));
+               });
 
         }
 
@@ -379,7 +338,7 @@ namespace TestBed
         {
             try
             {
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
                     while (true)
                     {
@@ -424,16 +383,6 @@ namespace TestBed
                                 ProgDay.Value = percentDayFinished;
                             }
 
-                            //Set how much money has been made today
-                            if (isLunch == false)
-                            {
-                                txtMoney.Text = "$" + moneyMade.ToString("F2");
-                            }
-                            else
-                            {
-                                txtMoney.Text = "Lunch Time";
-                            }
-
                             //Set the weather
                             txtWeather.Text = currentWeather;
 
@@ -448,18 +397,11 @@ namespace TestBed
                             //Set the grid height for the startup animation
                             Grid.Height = height;
 
-                            //if (height >= 194)
-                            //{
-                            //    Window.Height = 194;
-                            //}
-                           // else
-                           // {
-                                Window.Height = height;
-                           // }
+                             Window.Height = height;
                         }));
                         Thread.Sleep(3);
                     }
-                }));
+                });
             }
             catch (Exception ex)
             {
@@ -492,18 +434,18 @@ namespace TestBed
             //Exit and close all processes
             try
             {
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                     {
                         //My sketchy attempt at making an animation
                         for (int i = 100; i > 0; i--)
                         {
-                            height = (200.00 / 100.00) * i ;
+                            height = (180.00 / 100.00) * i ;
                             winOpacity -= 0.01;
-
+                            
                             Thread.Sleep(3);
                         }
                         Environment.Exit(0);
-                    }));
+                    });
             }
             catch (Exception ex)
             {
@@ -516,6 +458,7 @@ namespace TestBed
             //Use this to open the settings page
             Settings SettingsForm = new Settings(this);
             SettingsForm.ShowDialog();
+            SettingsForm = null;
 
         }
 
@@ -531,14 +474,14 @@ namespace TestBed
             {
                 if (opacity < 0.1)
                 {
-                    Task.Factory.StartNew(new Action(() =>
+                    Task.Factory.StartNew(() =>
                     {
                         for (int i = 0; i < 10; i++)
                         {
                             opacity += 0.1;
                             Thread.Sleep(20);
                         }
-                    }));
+                    });
                 }
             }
             catch (Exception ex)
@@ -554,7 +497,7 @@ namespace TestBed
                 if (opacity > 0.1)
                 {
                     //This makes the buttons fade-in
-                    Task.Factory.StartNew(new Action(() =>
+                    Task.Factory.StartNew(() =>
                     {
                         for (int i = 0; i < 10; i++)
                         {
@@ -562,7 +505,7 @@ namespace TestBed
                             Thread.Sleep(20);
                         }
 
-                    }));
+                    });
                 }
             }
             catch (Exception ex)

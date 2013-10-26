@@ -59,15 +59,7 @@ namespace TestBed
                 Config.Default.EndHours = Convert.ToInt16(cmbDayEndHour.Text);
                 Config.Default.EndHoursMins = Convert.ToInt16(cmbDayEndHourMins.Text);
                 Config.Default.TotalHours = Convert.ToInt16(cmbDayEndHour.Text) - Convert.ToInt16(cmbStartHour.Text);
-                if (double.TryParse(txtMoney.Text, out Result) == true && Convert.ToDouble(txtMoney.Text) >= 0)
-                {
-                    Config.Default.Money = Convert.ToDouble(txtMoney.Text);
-                }
-                else
-                {
-                    MessageBox.Show("Hourly Wage must be a positive number that's greater than 0");
-                    return;
-                }
+              
                 Config.Default.Save();
 
                 //Refresh the weather
@@ -87,12 +79,12 @@ namespace TestBed
             {
                 height = 0;
 
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
                     //My sketchy attempt at making an animation
                     for (int i = 0; i < 100; i++)
                     {
-                        height = (200.00 / 100.00) * i;
+                        height = (180.00 / 100.00) * i;
                         winOpacity += 0.01;
 
                         Thread.Sleep(3);
@@ -106,7 +98,7 @@ namespace TestBed
                          
                     }
                        
-                }));
+                });
 
                 UpdateUI();
                 //Populate each control with the saved values
@@ -119,7 +111,6 @@ namespace TestBed
                 cmbStartMinute.Text = Config.Default.StartMinute.ToString();
                 cmbDayEndHour.Text = Config.Default.EndHours.ToString();
                 cmbDayEndHourMins.Text = Config.Default.EndHoursMins.ToString();
-                txtMoney.Text = Config.Default.Money.ToString();
             }
             catch (Exception ex)
             {
@@ -151,12 +142,12 @@ namespace TestBed
         {
             try
             {
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
                     //My sketchy attempt at making an animation
                     for (int i = 100; i > 0; i--)
                     {
-                        height = (200.00 / 100.00) * i;
+                        height = (180.00 / 100.00) * i;
                         winOpacity -= 0.01;
 
                         Thread.Sleep(3);
@@ -173,7 +164,7 @@ namespace TestBed
                         this.Close();
                        
                     }));
-                }));
+                });
             }
             catch (Exception ex)
             {
@@ -187,14 +178,14 @@ namespace TestBed
             {
                 if (opacity < 0.1)
                 {
-                    Task.Factory.StartNew(new Action(() =>
+                    Task.Factory.StartNew(() =>
                     {
                         for (int i = 0; i < 10; i++)
                         {
                             opacity += 0.1;
                             Thread.Sleep(20);
                         }
-                    })); 
+                    }); 
                 }
             }
             catch (Exception ex)
@@ -210,7 +201,7 @@ namespace TestBed
                 if (opacity > 0.1)
                 {
                     //This makes the buttons fade-in
-                    Task.Factory.StartNew(new Action(() =>
+                    Task.Factory.StartNew(() =>
                     {
                         for (int i = 0; i < 10; i++)
                         {
@@ -218,7 +209,7 @@ namespace TestBed
                             Thread.Sleep(20);
                         }
 
-                    })); 
+                    }); 
                 }
             }
             catch (Exception ex)
@@ -235,7 +226,7 @@ namespace TestBed
             {
                 bool isActive = true;
 
-                Task.Factory.StartNew(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
                     while (isActive)
                     {
@@ -249,7 +240,7 @@ namespace TestBed
                         
                         Thread.Sleep(3);
                     }
-                }));
+                });
             }
             catch (Exception ex)
             {

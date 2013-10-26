@@ -36,6 +36,8 @@ namespace TestBed
                     currentCondition = NodeCondition[0].Attributes["text"].Value;
                     lastUpdated = NodeUpdated[0].InnerText;
 
+                    condition = null;
+
                     return string.Format(" Now: {2}°F, {0}{1} High: {4}{1} {5}",
                         currentCondition, Environment.NewLine, now, format, temps, lastUpdated.Remove(lastUpdated.Length - 3).Substring(15));
                 }
