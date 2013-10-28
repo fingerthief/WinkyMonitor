@@ -45,7 +45,7 @@ namespace TestBed
                     //My sketchy attempt at making an animation
                     for (int i = 0; i < 100; i++)
                     {
-                        height = (180.00 / 100.00) * i;
+                        height = (170.00 / 100.00) * i;
                         winOpacity += 0.01;
 
                         Thread.Sleep(3);
@@ -60,9 +60,6 @@ namespace TestBed
             //Call methods to start this beast    
             UpdateUI();     
             NetworkUsage();
-            PercentOfDayFinished();
-           // CheckForUpdates();
-           // MoneyEarned();
             SystemInfo();
             GetWeather();
         }
@@ -74,16 +71,16 @@ namespace TestBed
 
             try
             {
+                PerformanceCounter cpuCounter = new PerformanceCounter();
+
+                cpuCounter.CategoryName = "Processor";
+                cpuCounter.CounterName = "% Processor Time";
+                cpuCounter.InstanceName = "_Total";
+
                 Task.Factory.StartNew(() =>
                 {
                     while (true)
                     {
-                        PerformanceCounter cpuCounter = new PerformanceCounter();
-
-                        cpuCounter.CategoryName = "Processor";
-                        cpuCounter.CounterName = "% Processor Time";
-                        cpuCounter.InstanceName = "_Total";
-
                         //Grabs Needed Info For Disk Space etc...
                         DriveInfo[] drives
                             = DriveInfo.GetDrives();
@@ -115,8 +112,6 @@ namespace TestBed
                         cpuCounter.NextValue();
                         Thread.Sleep(1000);
                         cpuUsage = cpuCounter.NextValue();
-
-                        cpuCounter.Dispose();
                     }
                 });
             }
@@ -206,61 +201,32 @@ namespace TestBed
             }
         }
 
-        private void PercentOfDayFinished()
-        {
-            try
-            {
-                Task.Factory.StartNew(() =>
-                {
-                    
-                    while (true)
-                    {
-                        TimeSpan TotalMS = TimeSpan.FromHours(Config.Default.TotalHours);
-                        TimeSpan TotalMSMins = TimeSpan.FromMinutes(Config.Default.EndHoursMins);
-                        
-                        TotalMSDay = TotalMS.TotalMilliseconds + TotalMSMins.TotalMilliseconds;
-
-                        //Toal MS in 9 hour day 32400000
-                        TimeSpan CurrentTimeSpan = (DateTime.Now - new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day,Config.Default.StartHour, Config.Default.StartMinute, 0, 0));
-
-                        //Get all the ms since the day has started
-                        percentDayFinished = CurrentTimeSpan.TotalMilliseconds;
-
-                        if (actualPercentFinished <= 100)
-                        {
-                            //get the percentage of day finished
-                            actualPercentFinished = (100 / TotalMSDay) * percentDayFinished;
-                        }
-                        Thread.Sleep(30);
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
 
         public void GetWeather()
         {
-            //Instantiate the weather class
-            Weather Weather = new Weather();
-
-            Task.Factory.StartNew(() =>
-               {
-                   while (true)
-                   {
-                       //return a formatted string of the weather
-                       currentWeather = Weather.GetWeatherXMLAndReturnString(Config.Default.ZIP);
-
-                       Weather = null;
-
-                       //Check every fifteen minutes
-                       Thread.Sleep(900000);
-                   }
-               });
-
+            Weather WeatherLoad = new Weather();
+            try
+            {
+                if (currentWeather == "Loading..." || currentWeather == "Loading failed!")
+                {
+                    currentWeather = WeatherLoad.GetWeatherXMLAndReturnString(Config.Default.ZIP);
+                }
+                else
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        while (true)
+                        {
+                            currentWeather = WeatherLoad.GetWeatherXMLAndReturnString(Config.Default.ZIP);
+                            Thread.Sleep(900000);
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                currentWeather = "Loading failed!";
+            }
         }
 
         //Including the ability to install updates causes the application to be ran as an admin,
@@ -327,7 +293,7 @@ namespace TestBed
 
         private double ramPercent, driveSpace = 0, driveUsed = 0,
                 percentDayFinished = 0,
-                actualPercentFinished = 0, moneyMade, TotalMSDay = 0, opacity = 0, winOpacity = 0, height = 0;
+                actualPercentFinished = 0,TotalMSDay = 0, opacity = 0, winOpacity = 0, height = 0;
 
         private float cpuUsage = 0.0f;
         private string bytesSent, bytesRecieved, currentWeather, totalSent, totalReceived;
@@ -369,20 +335,6 @@ namespace TestBed
                            // lblUpdateCount.Content = updateCount.ToString();
                             //progUpdates.Value += progressIncrement;
 
-                            //Set values for percent of day finishes
-                            if ( actualPercentFinished >= 100)
-                            { 
-                                lblDayfinished.Content = "0.00%";
-                                actualPercentFinished = 100;
-                                ProgDay.Value = 0;
-                            }
-                            else
-                            {
-                                lblDayfinished.Content = actualPercentFinished.ToString("f2") + "%";
-                                ProgDay.Maximum = TotalMSDay;
-                                ProgDay.Value = percentDayFinished;
-                            }
-
                             //Set the weather
                             txtWeather.Text = currentWeather;
 
@@ -397,7 +349,7 @@ namespace TestBed
                             //Set the grid height for the startup animation
                             Grid.Height = height;
 
-                             Window.Height = height;
+                            Window.Height = height;
                         }));
                         Thread.Sleep(3);
                     }
@@ -439,7 +391,7 @@ namespace TestBed
                         //My sketchy attempt at making an animation
                         for (int i = 100; i > 0; i--)
                         {
-                            height = (180.00 / 100.00) * i ;
+                            height = (170.00 / 100.00) * i ;
                             winOpacity -= 0.01;
                             
                             Thread.Sleep(3);
@@ -464,8 +416,8 @@ namespace TestBed
 
         private void txtWeather_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            currentWeather = "Loading...";
-            GetWeather();
+            currentWeather = "Loading..."; // this doesn't really show anymore, since we're much more efficient
+            GetWeather(); // this actually called another infinite loop thread
         }
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)

@@ -39,26 +39,10 @@ namespace TestBed
             {
                 button1_Click(null, null);
 
-                if (Convert.ToInt16(cmbDayEndHour.Text) < Convert.ToInt16(cmbStartHour.Text))
-                {
-                    MessageBox.Show("Day start must be before day end");
-                    return;
-                }
-                else if (Convert.ToInt16(cmbDayEndHour.Text) == Convert.ToInt16(cmbStartHour.Text) && Convert.ToInt16(cmbDayEndHourMins.Text) <= Convert.ToInt16(cmbStartMinute.Text))
-                {
-                    MessageBox.Show("Day start must be before day end");
-                    return;
-                }
-
                 //Switch over to the new zip code and save settings
                 Config.Default.ZIP = txtZip.Text;
                 Config.Default.Disk = comboDisk.SelectedIndex;
                 Config.Default.NIC = comboNic.SelectedIndex;
-                Config.Default.StartHour = Convert.ToInt16(cmbStartHour.Text);
-                Config.Default.StartMinute = Convert.ToInt16(cmbStartMinute.Text);
-                Config.Default.EndHours = Convert.ToInt16(cmbDayEndHour.Text);
-                Config.Default.EndHoursMins = Convert.ToInt16(cmbDayEndHourMins.Text);
-                Config.Default.TotalHours = Convert.ToInt16(cmbDayEndHour.Text) - Convert.ToInt16(cmbStartHour.Text);
               
                 Config.Default.Save();
 
@@ -84,7 +68,7 @@ namespace TestBed
                     //My sketchy attempt at making an animation
                     for (int i = 0; i < 100; i++)
                     {
-                        height = (180.00 / 100.00) * i;
+                        height = (130.00 / 100.00) * i;
                         winOpacity += 0.01;
 
                         Thread.Sleep(3);
@@ -107,10 +91,6 @@ namespace TestBed
 
                 comboDisk.SelectedIndex = Config.Default.Disk;
                 comboNic.SelectedIndex = Config.Default.NIC;
-                cmbStartHour.Text = Config.Default.StartHour.ToString();
-                cmbStartMinute.Text = Config.Default.StartMinute.ToString();
-                cmbDayEndHour.Text = Config.Default.EndHours.ToString();
-                cmbDayEndHourMins.Text = Config.Default.EndHoursMins.ToString();
             }
             catch (Exception ex)
             {
@@ -147,7 +127,7 @@ namespace TestBed
                     //My sketchy attempt at making an animation
                     for (int i = 100; i > 0; i--)
                     {
-                        height = (180.00 / 100.00) * i;
+                        height = (130.00 / 100.00) * i;
                         winOpacity -= 0.01;
 
                         Thread.Sleep(3);

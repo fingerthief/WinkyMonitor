@@ -13,16 +13,13 @@
             <ProgressBar Height="12" HorizontalAlignment="Left" Margin="37,104,0,0" Name="progDriveSpace" VerticalAlignment="Top" Width="99" Opacity="1" BorderBrush="#00000000" Foreground="Blue" BorderThickness="0" Background="#69000000" />
             <Label Content="Drive" Height="28" HorizontalAlignment="Left" Margin="3,97,0,0" Name="lblDrive" VerticalAlignment="Top" Opacity="1" FontSize="11" Foreground="White" />
             <Label Content="0 GB" Height="28" HorizontalAlignment="Left" Margin="60,97,0,0" Name="lblDriveFree" VerticalAlignment="Top" Opacity="1" FontSize="11" Foreground="White" />
-            <Label Content="In" Height="28" HorizontalAlignment="Left" Margin="19,129,0,0" Name="lblDownloading" VerticalAlignment="Top" Opacity="1" FontSize="11" Foreground="White" />
-            <Label Content="Out" Height="28" HorizontalAlignment="Left" Margin="11,149,0,0" Name="lblUploading" VerticalAlignment="Top" Opacity="1" FontSize="11" Foreground="White" />
-            <ProgressBar Height="12" HorizontalAlignment="Left" Margin="37,119,0,0" Name="ProgDay" VerticalAlignment="Top" Width="99" Maximum="32400000" BorderThickness="0" Foreground="Blue" Background="#69000000" />
-            <Label Content="0%" HorizontalAlignment="Left" Margin="60,112,0,0" Name="lblDayfinished" FontSize="11" Height="27" VerticalAlignment="Top" Foreground="White" />
-            <Label Content="Day" HorizontalAlignment="Left" Margin="9,112,0,0" Name="label1" FontSize="11" Foreground="White" Height="28" VerticalAlignment="Top" />
+            <Label Content="In" Height="28" HorizontalAlignment="Left" Margin="19,115,0,0" Name="lblDownloading" VerticalAlignment="Top" Opacity="1" FontSize="11" Foreground="White" />
+            <Label Content="Out" Height="28" HorizontalAlignment="Left" Margin="11,136,0,0" Name="lblUploading" VerticalAlignment="Top" Opacity="1" FontSize="11" Foreground="White" />
             <TextBlock Height="52" Margin="3,50,0,0" Name="txtWeather" Text="TextBlock" VerticalAlignment="Top" FontSize="11" Background="#48000000" Foreground="White" HorizontalAlignment="Left" Width="133" MouseRightButtonUp="txtWeather_MouseRightButtonUp" />
             <Button Content="X" Height="13" HorizontalAlignment="Left" Margin="126,2,0,0" Name="btnExit" VerticalAlignment="Top" Width="11" Background="Red" Focusable="False" FontSize="56" Click="btnExit_Click" BorderThickness="0" BorderBrush="Black" Opacity="0"  />
             <Button Background="Green" Content="S"  Focusable="False" FontSize="56" HorizontalAlignment="Left" Name="btnSettings" Width="11" Click="btnSettings_Click" Margin="7,2,0,0" BorderThickness="0" Visibility="Visible"  Opacity="0" Height="13" VerticalAlignment="Top" />
-            <TextBox HorizontalAlignment="Left" Margin="37,133,0,0" Name="txtRecieving" Width="99" Background="#48000000" Foreground="White" Height="18" VerticalAlignment="Top" FontSize="11" BorderThickness="0" IsEnabled="True" IsReadOnly="True" />
-            <TextBox HorizontalAlignment="Left" Margin="37,153,0,0" Name="txtSending" Width="99" Background="#48000000" Foreground="White" FontSize="11" BorderThickness="0" Height="18" VerticalAlignment="Top" IsReadOnly="True" />
+            <TextBox HorizontalAlignment="Left" Margin="37,120,0,0" Name="txtRecieving" Width="99" Background="#48000000" Foreground="White" Height="18" VerticalAlignment="Top" FontSize="11" BorderThickness="0" IsEnabled="True" IsReadOnly="True" />
+            <TextBox HorizontalAlignment="Left" Margin="37,140,0,0" Name="txtSending" Width="99" Background="#48000000" Foreground="White" FontSize="11" BorderThickness="0" Height="18" VerticalAlignment="Top" IsReadOnly="True" />
             <Label Content="Winky Monitor" Height="28" HorizontalAlignment="Left" Margin="29,-5,0,0" Name="label3" VerticalAlignment="Top" Foreground="White" />
 
         </Grid>
