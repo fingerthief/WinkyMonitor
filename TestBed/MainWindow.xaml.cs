@@ -71,6 +71,7 @@ namespace TestBed
 
             try
             {
+                Microsoft.VisualBasic.Devices.ComputerInfo RAM = new Microsoft.VisualBasic.Devices.ComputerInfo();
                 PerformanceCounter cpuCounter = new PerformanceCounter();
 
                 cpuCounter.CategoryName = "Processor";
@@ -103,8 +104,8 @@ namespace TestBed
                         }
 
                         //Retrieve RAM total and calculate how much is being used at the moment
-                        ramFree = new Microsoft.VisualBasic.Devices.ComputerInfo().AvailablePhysicalMemory / 1073741824.004733;
-                        ramTotal = new Microsoft.VisualBasic.Devices.ComputerInfo().TotalPhysicalMemory / 1073741824.004733;
+                        ramFree = RAM.AvailablePhysicalMemory / 1073741824.004733;
+                        ramTotal = RAM.TotalPhysicalMemory / 1073741824.004733;
                         ramUsed = ramTotal - ramFree;
                         ramPercent = ramUsed / ramTotal * 100;
 
@@ -176,40 +177,19 @@ namespace TestBed
             }
         }
 
-        private void CheckForUpdates()
-        {
-            try
-            {
-                Task.Factory.StartNew(() =>
-                {
-                    while (true)
-                    {
-                        //Lets check how many updates we have
-                        UpdateSession uSession = new UpdateSession();
-                        IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
-                        ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
-                        updateCount = uResult.Updates.Count;
-
-                        //Will check every 15 minutes
-                        Thread.Sleep(900000);
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-
         public void GetWeather()
         {
             Weather WeatherLoad = new Weather();
             try
             {
+                currentWeather = "Loading...";
+
                 if (currentWeather == "Loading..." || currentWeather == "Loading failed!")
                 {
-                    currentWeather = WeatherLoad.GetWeatherXMLAndReturnString(Config.Default.ZIP);
+                    Task.Factory.StartNew(() =>
+                    {
+                        currentWeather = WeatherLoad.GetWeatherXMLAndReturnString(Config.Default.ZIP);
+                    });
                 }
                 else
                 {
@@ -228,68 +208,6 @@ namespace TestBed
                 currentWeather = "Loading failed!";
             }
         }
-
-        //Including the ability to install updates causes the application to be ran as an admin,
-        //I will leave it out for now
-
-        //private void progressBar1_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        //{
-        //    try
-        //    {
-        //        //Be sure the user actually wants to install update
-        //        if (MessageBox.Show("Are You Sure You Want To Install Updates?", "Update Windows", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-        //        {
-        //            Task.Factory.StartNew(new Action(() =>
-        //            {
-        //                UpdateSession uSession = new UpdateSession();
-        //                IUpdateSearcher uSearcher = uSession.CreateUpdateSearcher();
-        //                ISearchResult uResult = uSearcher.Search("IsInstalled=0 and Type='Software'");
-
-        //                updateCount = uResult.Updates.Count;
-
-        //                if (uResult.Updates.Count == 0)
-        //                {
-        //                    MessageBox.Show("No Available Updates.");
-        //                }
-        //                else if (uResult.Updates.Count != 0)
-        //                {
-        //                    UpdateDownloader downloader = uSession.CreateUpdateDownloader();
-        //                    downloader.Updates = uResult.Updates;
-        //                    progressIncrement = (100 / uResult.Updates.Count) / 2;
-
-        //                    //Go through and download updates
-        //                    foreach (IUpdate update in uResult.Updates)
-        //                    {
-        //                        downloader.Download();
-        //                    }
-
-        //                    UpdateCollection updatesToInstall = new UpdateCollection();
-
-        //                    foreach (IUpdate update in uResult.Updates)
-        //                    {
-        //                        if (update.IsDownloaded)
-        //                        {
-        //                            updatesToInstall.Add(update);
-        //                        }
-
-        //                        IUpdateInstaller installer = uSession.CreateUpdateInstaller();
-        //                        installer.Updates = updatesToInstall;
-
-        //                        //Actually install updates
-        //                        IInstallationResult installationRes = installer.Install();
-        //                    }
-
-        //                    //Reset update count now that we're finished
-        //                    CheckForUpdates();
-        //                }
-        //            }));
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message);
-        //    }
-        //}
 
         private double ramPercent, driveSpace = 0, driveUsed = 0,
                 percentDayFinished = 0,
@@ -330,10 +248,6 @@ namespace TestBed
                             //Lets set the tooltip text to the total data used
                             txtSending.ToolTip = "Total Sent: " + totalSent;
                             txtRecieving.ToolTip = "Total Received: " + totalReceived;
-
-                            //Set label to number of updates
-                           // lblUpdateCount.Content = updateCount.ToString();
-                            //progUpdates.Value += progressIncrement;
 
                             //Set the weather
                             txtWeather.Text = currentWeather;
@@ -416,8 +330,7 @@ namespace TestBed
 
         private void txtWeather_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            currentWeather = "Loading..."; // this doesn't really show anymore, since we're much more efficient
-            GetWeather(); // this actually called another infinite loop thread
+            GetWeather();
         }
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)

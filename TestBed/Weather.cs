@@ -10,10 +10,10 @@ namespace TestBed
 {
     class Weather
     {
-        private static XmlDocument condition = new XmlDocument();
-
         public string GetWeatherXMLAndReturnString(string strZip)
         {
+            XmlDocument condition = new XmlDocument();
+
             while (true)
             {
                 try
@@ -34,6 +34,8 @@ namespace TestBed
                     now = NodeCondition[0].Attributes["temp"].Value;
                     currentCondition = NodeCondition[0].Attributes["text"].Value;
                     lastUpdated = NodeUpdated[0].InnerText;
+
+                    NameSpaceMgrCondition = null;
 
                     return string.Format(" Now: {2}°F, {0}{1} High: {4}{1} {5}",
                         currentCondition, Environment.NewLine, now, format, temps, lastUpdated.Remove(lastUpdated.Length - 3).Substring(15));
