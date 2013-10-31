@@ -10,10 +10,10 @@ namespace TestBed
 {
     class Weather
     {
+        private static XmlDocument condition = new XmlDocument();
+
         public string GetWeatherXMLAndReturnString(string strZip)
         {
-            XmlDocument condition = new XmlDocument();
-
             while (true)
             {
                 try

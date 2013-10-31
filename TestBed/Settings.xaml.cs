@@ -34,7 +34,6 @@ namespace TestBed
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            double Result = 0;
             try
             {
                 button1_Click(null, null);
